@@ -31,6 +31,8 @@ step2:
     mov cr0, eax
     jmp CODE_SEG:load32
 
+    jmp $
+
 ;GDT
 gdt_start:
 gdt_null: ; first entry of GDT which must be null
@@ -56,16 +58,74 @@ gdt_descriptor:
     dd gdt_start ; offset of gdt
 
 [BITS 32]
-load32:
-    mov ax, DATA_SEG
-    mov ds, ax
-    mov es, ax
-    mov fs, ax
-    mov gs, ax
-    mov ss, ax
-    mov ebp, 0x00200000
-    mov esp, ebp
-    jmp $
+
+load32: ; load kernel to memory and jump to it
+    mov eax, 1 ; starting sector (first sector is zero)
+    mov ecx, 100 ; number of sectors to load
+    mov edi, 0x0100000 ; location of where the kernel will be loaded
+    call ata_lba_read
+    jmp CODE_SEG:0x0100000
+
+ata_lba_read:
+    mov ebx, eax ; BACKUP LBA
+    ; send the highest 8 bits of the lba to hard disk controller
+    shr eax, 24
+    or eax, 0xE0 ; Select the master drive
+    mov dx, 0x1F6
+    out dx, al
+    ; finished sending highest 8 bits of the lba
+
+    ; send the total number of sectors to read
+    mov eax, ecx
+    mov dx, 0x1F2
+    out dx, al
+    ; end of sending the total number of sectors to read
+
+    mov eax, ebx ; restore backup lba
+
+    ; send more bits of lba
+    mov eax, ebx
+    mov dx, 0x1F3
+    out dx, al
+    ; finished sending more bits of the lba
+
+    ; send more bits of lba
+    mov dx, 0x1F4
+    mov eax, ebx ; Restore the backup lba
+    shr eax, 8  
+    out dx, al
+    ; finished sending more bits of lba
+
+    ; send upper 16 bits of lba
+    mov dx, 0x1F5
+    mov eax, ebx ; Reswtore backup lba
+    shr eax, 16
+    out dx, al
+    ; finished sending upper 16 bits of lba
+
+    mov dx, 0x1F7
+    mov al, 0x20
+    out dx, al
+
+; Read all sectors into memory
+.next_sector:
+    push ecx
+; check if we are ready to read
+.try_again:
+    mov dx, 0x1F7
+    in al, dx
+    test al, 8
+    jz .try_again
+; Read 256 words = 512 bytes at a time
+    mov ecx, 256
+    mov dx, 0x1F0
+    rep insw ;Input word from I/O port specified in DX into memory location specified in ES:(E)DI (edi is set above to 0x0100000)
+    pop ecx
+    loop  .next_sector ; loops 256 times ---> read a hole sector
+
+    ; End of reading sectors into memory
+    ret
+
 
 times 510 - ($ - $$) db 0
 dw 0xaa55 ; 0x55aa -> x86_64 architecture is little endian so we right it in reverse
