@@ -1,5 +1,7 @@
 [BITS 32]
+
 global _start
+extern kernel_main
 ; code and data segments we have setup
 CODE_SEG equ 0x08
 DATA_SEG equ 0x08
@@ -19,5 +21,10 @@ _start:
     or al, 2
     out 0x92, al
 
-
+    call kernel_main
     jmp $
+
+
+; allign kernel so we wont have problems later
+; with c code (allign it to 16 bytes so 512 % 16 = 0)
+times 512 - ($ - $$) db 0
