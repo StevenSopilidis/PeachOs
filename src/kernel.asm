@@ -4,7 +4,7 @@ global _start
 extern kernel_main
 ; code and data segments we have setup
 CODE_SEG equ 0x08
-DATA_SEG equ 0x08
+DATA_SEG equ 0x10
 
 _start:
     mov ax, DATA_SEG
@@ -22,6 +22,7 @@ _start:
     out 0x92, al
 
     call kernel_main
+
     jmp $
 
 
