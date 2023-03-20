@@ -1,6 +1,7 @@
 [BITS 32]
 
 global _start
+global problem
 extern kernel_main
 ; code and data segments we have setup
 CODE_SEG equ 0x08
@@ -25,6 +26,8 @@ _start:
 
     jmp $
 
+problem:
+    int 0
 
 ; allign kernel so we wont have problems later
 ; with c code (allign it to 16 bytes so 512 % 16 = 0)
