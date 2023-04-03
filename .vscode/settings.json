@@ -3,6 +3,7 @@
         "stdint.h": "c",
         "cstdint": "c",
         "stdint-gcc.h": "c",
-        "memory.h": "c"
+        "memory.h": "c",
+        "config.h": "c"
     }
 }

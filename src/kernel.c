@@ -2,6 +2,7 @@
 #include "stdint.h"
 #include "stddef.h"
 #include "idt/idt.h"
+#include "io/io.h"
 
 static uint16_t* video_mem = 0;
 static uint16_t terminal_row = 0;
@@ -67,6 +68,8 @@ void print(const char* str)
 }
 
 extern void problem();
+extern void problem2();
+
 
 void kernel_main()
 {
@@ -75,7 +78,6 @@ void kernel_main()
 
     // initialize the IDT
     idt_init();
-    problem();
 
     print("Hallo world2\n");
 }
