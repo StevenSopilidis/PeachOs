@@ -3,6 +3,7 @@
 #include "stddef.h"
 #include "idt/idt.h"
 #include "io/io.h"
+#include "memory/heap/kheap.h"
 
 static uint16_t* video_mem = 0;
 static uint16_t terminal_row = 0;
@@ -76,8 +77,8 @@ void kernel_main()
     terminal_initialize();
     print("Hallo world\n");
 
+    kheap_init();
+
     // initialize the IDT
     idt_init();
-
-    print("Hallo world2\n");
-}
+}   

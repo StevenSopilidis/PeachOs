@@ -4,6 +4,11 @@
         "cstdint": "c",
         "stdint-gcc.h": "c",
         "memory.h": "c",
-        "config.h": "c"
+        "config.h": "c",
+        "stddef.h": "c",
+        "kernel.h": "c",
+        "stdbool.h": "c",
+        "status.h": "c",
+        "kheap.h": "c"
     }
 }
