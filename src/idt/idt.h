@@ -21,6 +21,8 @@ struct idtr_desc {
 extern void idt_load(struct idtr_desc* ptr);
 extern void int21h();
 extern void no_interrupt();
+extern void enable_interupts();
+extern void disable_interupts();
 void idt_init();
 
 #endif

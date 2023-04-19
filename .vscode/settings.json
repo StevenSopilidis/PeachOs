@@ -9,6 +9,7 @@
         "kernel.h": "c",
         "stdbool.h": "c",
         "status.h": "c",
-        "kheap.h": "c"
+        "kheap.h": "c",
+        "heap.h": "c"
     }
 }

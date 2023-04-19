@@ -21,7 +21,7 @@ void no_interrupt_handler() {
     outb(0x20, 0x20); 
 }
 
-// method for initializing an entrie of the idt
+// method for initializing an entry of the idt
 void idt_set(int interrupt_num, void* address) {
     struct idt_desc* desc = &idt_descriptors[interrupt_num];
     desc->offset_1 = (int32_t)address & 0x0000ffff; // lower 16 bits

@@ -4,6 +4,8 @@
 #include "idt/idt.h"
 #include "io/io.h"
 #include "memory/heap/kheap.h"
+#include "memory/paging/paging.h"
+
 
 static uint16_t* video_mem = 0;
 static uint16_t terminal_row = 0;
@@ -72,6 +74,8 @@ extern void problem();
 extern void problem2();
 
 
+static struct paging_4gb_chunk* kernel_chunk = 0;
+
 void kernel_main()
 {
     terminal_initialize();
@@ -81,4 +85,18 @@ void kernel_main()
 
     // initialize the IDT
     idt_init();
+
+    // Setup paging
+    kernel_chunk = paging_new_4gb (PAGING_IS_WRITEABLE | PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
+    
+    // switch to kernel pagign chunk
+    paging_switch(paging_4gb_chunk_get_directory(kernel_chunk));
+    // check mapping virtual address to real address
+    char* ptr = kzalloc(4096);
+    paging_set(paging_4gb_chunk_get_directory(kernel_chunk), (void *)0x1000, (uint32_t)ptr | PAGING_ACCESS_FROM_ALL | PAGING_IS_PRESENT | PAGING_IS_WRITEABLE);
+
+    // enable paging
+    enable_paging();
+    // Enable the system interupts
+    enable_interupts();
 }   
