@@ -1,15 +1,10 @@
 {
     "files.associations": {
-        "stdint.h": "c",
-        "cstdint": "c",
-        "stdint-gcc.h": "c",
-        "memory.h": "c",
-        "config.h": "c",
-        "stddef.h": "c",
-        "kernel.h": "c",
-        "stdbool.h": "c",
-        "status.h": "c",
+        "*.tcc": "c",
+        "algorithm": "c",
+        "heap.h": "c",
         "kheap.h": "c",
-        "heap.h": "c"
+        "memory.h": "c",
+        "string.h": "c"
     }
 }
