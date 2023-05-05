@@ -6,6 +6,7 @@
 #include "memory/heap/kheap.h"
 #include "memory/paging/paging.h"
 #include "disk/disk.h"
+#include "disk/stream.h"
 #include "fs/pparser.h"
 #include "string/string.h"
 
@@ -92,11 +93,10 @@ void kernel_main()
     // enable paging
     enable_paging();
 
-    struct path_root* root = pathparser_parse("0:/bin/os.bin", "");
-
-    if(root) {
-        
-    }
+    struct disk_stream* stream = diskstream_new(0);
+    disk_seek(stream, 0x201);
+    unsigned char c = 's';
+    diskstream_read(stream, &c, 1);
 
     // Enable the system interupts
     enable_interupts();
