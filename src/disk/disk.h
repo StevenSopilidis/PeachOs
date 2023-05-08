@@ -1,6 +1,8 @@
 #ifndef _DISK_H_
 #define _DISK_H_
 
+#include "../fs/file.h"
+
 // things like partitions, real disks, virtaul file systems
 typedef unsigned int PEACHOS_DISK_TYPE;
 
@@ -11,6 +13,9 @@ struct disk
 {
     PEACHOS_DISK_TYPE type;
     unsigned int sector_size;
+    
+    // filesystem binded to disk
+    struct filesystem* filesystem;
 };
 
 void disk_search_and_init();

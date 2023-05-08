@@ -4,13 +4,34 @@ BITS 16
 CODE_SEG equ gdt_code - gdt_start ; offset of code segment in gdt
 DATA_SEG equ gdt_data - gdt_start ; offset of data segment in gdt
 
-; bios parameter block set
-_start: 
-    jmp short start
-    nop
-times 33 db 0
+jmp short start
+nop
 
-; start of bootloader$
+; FAT16 header
+OEMIdentifier       db 'PEACHOS '
+BytesPerSector      dw 0x200
+SectorsPerCluster   db 0x80
+ReservedSectors     dw 200
+FATCopies           db 0x02
+RootDirEntries      dw 0x40
+NumSectors          dw 0x00
+MediaType           db 0xF8
+SectorsPerFat       dw 0x100
+SectorsPerTrack     dw 0x20
+NumberOfHeads       dw 0x40
+HiddenSectors       dd 0x00
+SectorsBig          dd 0x773594
+
+; Extended BPB (DOS 4.0)
+DriveNumber         db 0x80
+WinNTBit            db 0x00
+Signature           db 0x29
+VolumeID            dd 0xD105
+VolumeIDString      db 'PEACHOS BOO'
+SystemIDString      db 'FAT16   '
+
+
+; start of bootloader
 start: 
     jmp 0:step2 ; cs == 0 * 16 + offset of step2 (origin is set to 0x7c00)
 

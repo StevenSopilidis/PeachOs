@@ -20,4 +20,9 @@
 // sector size we use
 #define PEACHOS_SECTOR_SIZE 512
 
+// max number of file systems than can be used in our os
+#define PEACHOS_MAX_FILESYSTEMS 12
+#define PEACHOS_MAX_FILE_DESCRIPTORS 512
+
+
 #endif
