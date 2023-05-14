@@ -9,6 +9,7 @@
 #include "disk/stream.h"
 #include "fs/pparser.h"
 #include "string/string.h"
+#include "fs/file.h"
 
 static uint16_t* video_mem = 0;
 static uint16_t terminal_row = 0;
@@ -66,9 +67,6 @@ void print(const char* str)
     
 }
 
-extern void problem();
-extern void problem2();
-
 
 static struct paging_4gb_chunk* kernel_chunk = 0;
 
@@ -78,6 +76,9 @@ void kernel_main()
     print("Hallo world\n");
 
     kheap_init();
+
+    // initialize filesystems
+    fs_init();
 
     // Search and initialize the disks
     disk_search_and_init();
@@ -92,11 +93,6 @@ void kernel_main()
     paging_switch(paging_4gb_chunk_get_directory(kernel_chunk));
     // enable paging
     enable_paging();
-
-    struct disk_stream* stream = diskstream_new(0);
-    disk_seek(stream, 0x201);
-    unsigned char c = 's';
-    diskstream_read(stream, &c, 1);
 
     // Enable the system interupts
     enable_interupts();

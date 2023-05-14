@@ -24,3 +24,16 @@ bool is_digit(char c) {
 int to_numeric_digit(char c) {
     return c - 48;
 }
+
+char* strcpy(char* dest, const char* src) {
+    char* res = dest;
+    while (*src != '\0')
+    {
+        *dest = *src;
+        src++;
+        dest++;
+    }
+    *dest = '\0';
+
+    return res;
+}

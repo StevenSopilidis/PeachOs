@@ -4,6 +4,7 @@
 #include "../memory/memory.h"
 #include "../memory/heap/kheap.h"
 #include "../status.h"
+#include "fat/fat16.h"
 
 // represents every filesystem in our os
 struct filesystem* filesystems[PEACHOS_MAX_FILESYSTEMS];
@@ -36,7 +37,7 @@ void fs_insert_filesystem(struct filesystem* filesystem) {
 // file systems that are built into the core kernel
 // in our case that is fat16 filesystem
 static void fs_static_load() {
-    // fs_insert_filesystem(fat16_init());
+    fs_insert_filesystem(fat16_init());
 }
 
 // will load all available filesystems

@@ -5,6 +5,9 @@
         "heap.h": "c",
         "kheap.h": "c",
         "memory.h": "c",
-        "string.h": "c"
+        "string.h": "c",
+        "fat16.h": "c",
+        "file.h": "c",
+        "pparser.h": "c"
     }
 }

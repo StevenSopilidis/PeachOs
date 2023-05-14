@@ -15,5 +15,8 @@ bool is_digit(char c);
 // gets a numeric input like '5' and returns 5 
 int to_numeric_digit(char c);
 
+// copies a string to dest from src
+char* strcpy(char* dest, const char* src);
+
 
 #endif
