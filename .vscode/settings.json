@@ -8,6 +8,8 @@
         "string.h": "c",
         "fat16.h": "c",
         "file.h": "c",
-        "pparser.h": "c"
+        "pparser.h": "c",
+        "stdint.h": "c",
+        "status.h": "c"
     }
 }
