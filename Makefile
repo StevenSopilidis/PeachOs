@@ -9,7 +9,7 @@ all: ./bin/boot.bin ./bin/kernel.bin
 	dd if=/dev/zero bs=1048576 count=16 >> ./bin/os.bin # 16 MB's so we can store our files
 	sudo mount -t vfat ./bin/os.bin /mnt/d # mount directory to os
 	sudo cp ./hallo.txt /mnt/d
-	sudo unmount /mnt/d
+	sudo umount /mnt/d
 
 ./bin/kernel.bin: $(FILES)
 	i686-elf-ld -g -relocatable $(FILES) -o ./build/kernelfull.o
