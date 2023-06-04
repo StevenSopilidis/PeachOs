@@ -55,7 +55,7 @@ struct file_descriptor {
 // to initialize the filesystem
 void fs_init();
 // to open a file
-int fopen(const char* filename, const char* mode);
+int fopen(const char* filename, const char* mode_string);
 // for inserting a filesystem
 void fs_insert_filesystem(struct filesystem* filesystem);
 
