@@ -2,6 +2,7 @@
 #define _FILE_H_
 
 #include "pparser.h"
+#include "stdint.h"
 
 
 typedef unsigned int FILE_SEEK_MODE;
@@ -30,11 +31,21 @@ typedef void*(*FS_OPEN_FUNCTION)(struct disk* disk, struct path_part* path, FILE
 // based on the file system its been implemented by
 // returns 0 if the provided disk is using its filesystem
 typedef int (*FS_RESOLVE_FUNCTION)(struct disk* disk);
+// function for read from file
+// @disk: disk to read from
+// @private: fs private data
+// @size: size of data to read
+// @nmemb: number of blocks of size @size to read 
+// for e.g if size=10 and nmemb=5 wil will read
+// 50 bytes
+// @out: buffer to put the data
+typedef int (*FS_READ_FUNCTION)(struct disk* disk,void* private, uint32_t size, uint32_t nmemb, char* out);
 
 // represents a filesystem
 struct  filesystem {
     FS_RESOLVE_FUNCTION resolve;
     FS_OPEN_FUNCTION open;  
+    FS_READ_FUNCTION read;
 
     char name[20];
 };
@@ -56,6 +67,8 @@ struct file_descriptor {
 void fs_init();
 // to open a file
 int fopen(const char* filename, const char* mode_string);
+// to read file
+int fread(void* ptr, uint32_t size, uint32_t nmemb, int fd);
 // for inserting a filesystem
 void fs_insert_filesystem(struct filesystem* filesystem);
 

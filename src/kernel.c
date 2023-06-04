@@ -101,6 +101,9 @@ void kernel_main()
 
     if(fd) {
         print("Opend hello.txt\n");
+        char buf[12];
+        fread(buf,12,1,fd);
+        print(buf);
     }
 
     while(1) {}
