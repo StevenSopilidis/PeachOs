@@ -41,11 +41,15 @@ typedef int (*FS_RESOLVE_FUNCTION)(struct disk* disk);
 // @out: buffer to put the data
 typedef int (*FS_READ_FUNCTION)(struct disk* disk,void* private, uint32_t size, uint32_t nmemb, char* out);
 
+// function pointer for seek function of filesystem
+typedef int (*FS_SEEK_FUNCTION)(void* private, uint32_t offset, FILE_SEEK_MODE seek_mode);
+
 // represents a filesystem
 struct  filesystem {
     FS_RESOLVE_FUNCTION resolve;
     FS_OPEN_FUNCTION open;  
     FS_READ_FUNCTION read;
+    FS_SEEK_FUNCTION seek;
 
     char name[20];
 };
@@ -69,6 +73,8 @@ void fs_init();
 int fopen(const char* filename, const char* mode_string);
 // to read file
 int fread(void* ptr, uint32_t size, uint32_t nmemb, int fd);
+// to seek a file
+int fseek(int fd, uint32_t offset, FILE_SEEK_MODE whence);
 // for inserting a filesystem
 void fs_insert_filesystem(struct filesystem* filesystem);
 
