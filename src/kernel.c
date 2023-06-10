@@ -98,14 +98,9 @@ void kernel_main()
     enable_interupts();
 
     int fd = fopen("0:/hello.txt", "r");
-
     if(fd) {
-        print("Opend hello.txt\n");
-        char buf[12];
-        fseek(fd, 2, SEEK_SET);
-        fread(buf,11,1,fd);
-        buf[11] = '\0';
-        print(buf);
+        struct file_stat s;
+        fstat(fd, &s);
     }
 
     while(1) {}
