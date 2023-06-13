@@ -41,6 +41,9 @@ typedef int (*FS_RESOLVE_FUNCTION)(struct disk* disk);
 // @out: buffer to put the data
 typedef int (*FS_READ_FUNCTION)(struct disk* disk,void* private, uint32_t size, uint32_t nmemb, char* out);
 
+// function pointer for closing a file
+typedef int (*FS_CLOSE_FUNCTION)(void* private);
+
 // function pointer for seek function of filesystem
 typedef int (*FS_SEEK_FUNCTION)(void* private, uint32_t offset, FILE_SEEK_MODE seek_mode);
 
@@ -68,6 +71,7 @@ struct  filesystem {
     FS_READ_FUNCTION read;
     FS_SEEK_FUNCTION seek;
     FS_STAT_FUNCTION stat;
+    FS_CLOSE_FUNCTION close;
 
     char name[20];
 };
@@ -97,6 +101,8 @@ int fseek(int fd, uint32_t offset, FILE_SEEK_MODE whence);
 void fs_insert_filesystem(struct filesystem* filesystem);
 // for getting stats on file
 int fstat(int fd, struct file_stat* stat);
+// for closing a file
+int fclose(int fd);
 
 struct filesystem* fs_resolve(struct disk* disk);
 
