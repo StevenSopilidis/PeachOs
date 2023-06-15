@@ -67,6 +67,7 @@ struct fat_h
     } shared;
 };
 
+// struct representing a file
 struct fat_directory_item
 {
     uint8_t filename[8];
@@ -84,6 +85,7 @@ struct fat_directory_item
     uint32_t filesize;
 } __attribute__((packed));
 
+// struct representing a directory
 struct fat_directory
 {
     struct fat_directory_item* item;
@@ -92,6 +94,7 @@ struct fat_directory
     int ending_sector_pos;
 };
 
+// struct representing fat item either a file or directory
 struct fat_item
 {
     union 
@@ -103,12 +106,14 @@ struct fat_item
     FAT_ITEM_TYPE type;
 };
 
+// represents a file descriptor
 struct fat_file_descriptor
 {
     struct fat_item* item;
     uint32_t pos;
 };
 
+// private data of our filesystem
 struct fat_private
 {
     struct fat_h header;
@@ -118,7 +123,6 @@ struct fat_private
     struct disk_stream* cluster_read_stream;
     // Used to stream the file allocation table
     struct disk_stream* fat_read_stream;
-
 
     // Used in situations where we stream the directory
     struct disk_stream* directory_stream;
@@ -141,12 +145,14 @@ struct filesystem fat16_fs =
     .close= fat16_close,
 };
 
+// initializes the fat16 filesystem
 struct filesystem* fat16_init()
 {
     strcpy(fat16_fs.name, "FAT16");
     return &fat16_fs;
 }
 
+// initialize private data for fat16 filesystem
 static void fat16_init_private(struct disk* disk, struct fat_private* private)
 {
     memset(private, 0, sizeof(struct fat_private));
@@ -155,12 +161,15 @@ static void fat16_init_private(struct disk* disk, struct fat_private* private)
     private->directory_stream = diskstream_new(disk->id);
 }
 
-
+// converts sector number to absolute value in bytes
 int fat16_sector_to_absolute(struct disk* disk, int sector)
 {
     return sector * disk->sector_size;
 }
 
+// function for getting all the items from a directory given its
+// starting sector
+// returns the number of items in the directory
 int fat16_get_total_items_for_directory(struct disk* disk, uint32_t directory_start_sector)
 {
     struct fat_directory_item item;
@@ -187,6 +196,8 @@ int fat16_get_total_items_for_directory(struct disk* disk, uint32_t directory_st
             goto out;
         }
 
+        // the first byte of the filename indicates
+        // if we should continue searching or not
         if (item.filename[0] == 0x00)
         {
             // We are done
@@ -208,6 +219,8 @@ out:
     return res;
 }
 
+// function that get the root directory of the fs
+// and returns it via directory parameter
 int fat16_get_root_directory(struct disk* disk, struct fat_private* fat_private, struct fat_directory* directory)
 {
     int res = 0;
@@ -250,6 +263,9 @@ int fat16_get_root_directory(struct disk* disk, struct fat_private* fat_private,
 out:
     return res;
 }
+
+// function that resolves wether or not the fat16 filesystem
+// can be loaded
 int fat16_resolve(struct disk* disk)
 {
     int res = 0;
@@ -499,6 +515,8 @@ void fat16_free_directory(struct fat_directory* directory)
 }
 
 
+// function for realesing resources
+// that have to do with fat_item
 void fat16_fat_item_free(struct fat_item* item)
 {
     if (item->type == FAT_ITEM_TYPE_DIRECTORY)
@@ -576,6 +594,8 @@ struct fat_item* fat16_new_fat_item_for_directory_item(struct disk* disk, struct
     return f_item;
 }
 
+// function that finds an item in a directory
+// and if found returns it
 struct fat_item* fat16_find_item_in_directory(struct disk* disk, struct fat_directory* directory, const char* name)
 {
     struct fat_item* f_item = 0;
@@ -592,6 +612,7 @@ struct fat_item* fat16_find_item_in_directory(struct disk* disk, struct fat_dire
 
     return f_item;
 }
+
 struct fat_item* fat16_get_directory_entry(struct disk* disk, struct path_part* path)
 {
     struct fat_private* fat_private = disk->fs_private;

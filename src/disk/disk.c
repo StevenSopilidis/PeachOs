@@ -4,6 +4,9 @@
 #include "../memory/memory.h"
 #include "../config.h"
 #include "../status.h"
+#include "kernel.h"
+#include "string/string.h"
+
 
 struct disk disk;
 
@@ -67,4 +70,16 @@ int disk_read_block(struct disk* idisk, unsigned int lba, int total, void *buffe
         return -EIO;
     }
     return disk_read_sector(lba, total, buffer);
+}
+
+// function for writing a hole sector (512 bytes) to disk
+// lba: lba address of disk
+// total: ammount of sectors to write
+// addr: address of the data
+int disk_write_block(struct disk* idisk, unsigned int lba, int total, uint32_t addr) {
+    if (idisk != &disk) {
+        return -EIO;
+    }
+    lba_write(lba, total, addr);
+    return PEACHOS_ALL_OK;
 }

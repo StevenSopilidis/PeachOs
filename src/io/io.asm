@@ -4,6 +4,7 @@ global insb
 global insw
 global outb
 global outw
+global outdw
 
 ; first argument port to read from
 insb:

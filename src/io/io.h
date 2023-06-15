@@ -1,6 +1,8 @@
 #ifndef _IO_H_
 #define _IO_H_
 
+#include "stdint.h"
+
 // read byte from specified port
 extern unsigned char insb(unsigned short port);
 // read word from specified port
