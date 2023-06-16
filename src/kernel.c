@@ -73,12 +73,11 @@ static struct paging_4gb_chunk* kernel_chunk = 0;
 void kernel_main()
 {
     terminal_initialize();
-    print("Hallo world\n");
 
     kheap_init();
 
     // initialize filesystems
-    // fs_init();
+    fs_init();
 
     // Search and initialize the disks
     disk_search_and_init();
@@ -97,32 +96,6 @@ void kernel_main()
     // Enable the system interupts
     enable_interupts();
 
-    char* d = "hallo steven asd fnoiwerio 4230hr430hj3hir43iowedfoji  dsfjiowehrjiowtrhw   wetoihjwetio";
-    uint32_t addr = (uint32_t)d; 
-    disk_write_block(disk_get(0),300, 1, addr);
-    struct disk_stream* stream = diskstream_new(0);
-    disk_seek(stream, 512 * 300 + 5);
-    diskstream_write(stream, (unsigned char* )"not hallo", 9);
-    disk_seek(stream, 512 * 300 + 30);
-    diskstream_write(stream, (unsigned char* )"dick", 4);
-    char* buf = kzalloc(200);
-    disk_seek(stream, 512 * 300);
-    diskstream_write(stream, (void *)"stef", 4);
-    disk_seek(stream, 512 * 300);
-    diskstream_write(stream, (void *)"no", 2);
-
-    diskstream_read(stream, (void *)buf, 30);
-    print("I am not here");
-
-
-    // int fd = fopen("0:/hello.txt", "r");
-    // if(fd) {
-    //     struct file_stat s;
-    //     fstat(fd, &s);
-    //     fclose(fd);
-
-    //     print("File closed\n");
-    // }
 
     while(1) {}
 }   
