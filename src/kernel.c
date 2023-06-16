@@ -105,13 +105,15 @@ void kernel_main()
     diskstream_write(stream, (unsigned char* )"not hallo", 9);
     disk_seek(stream, 512 * 300 + 30);
     diskstream_write(stream, (unsigned char* )"dick", 4);
-    disk_seek(stream, 512 * 300 + 510);
-    diskstream_write(stream, (unsigned char* )"Easter", 6);
-    disk_seek(stream, 512 * 300);
     char* buf = kzalloc(200);
-    diskstream_read(stream, (void *)buf, 89);
-    disk_seek(stream, 512 * 301);
-    diskstream_read(stream, (void *)buf, 89);
+    disk_seek(stream, 512 * 300);
+    diskstream_write(stream, (void *)"stef", 4);
+    disk_seek(stream, 512 * 300);
+    diskstream_write(stream, (void *)"no", 2);
+
+    diskstream_read(stream, (void *)buf, 30);
+    print("I am not here");
+
 
     // int fd = fopen("0:/hello.txt", "r");
     // if(fd) {

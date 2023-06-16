@@ -11,7 +11,7 @@ struct disk_stream {
 struct disk_stream* diskstream_new(int disk_id);
 int disk_seek(struct disk_stream* stream, int pos); 
 int diskstream_read(struct disk_stream* stream, void* out, int total);
-int diskstream_write(struct disk_stream* stream, unsigned char* data, int total);
+int diskstream_write(struct disk_stream* stream, void* data, int total);
 void diskstream_close(struct disk_stream* stream);
 
 
