@@ -63,7 +63,6 @@ struct file_stat {
 // function pointer for fstat function of filesystem
 typedef int (*FS_STAT_FUNCTION)(struct disk* disk, void* private, struct file_stat* stat);
 
-
 // represents a filesystem
 struct  filesystem {
     FS_RESOLVE_FUNCTION resolve;
