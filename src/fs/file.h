@@ -4,6 +4,9 @@
 #include "pparser.h"
 #include "stdint.h"
 
+#define FS_DIRECTORY 0
+#define FS_FILE 1
+
 
 typedef unsigned int FILE_SEEK_MODE;
 
@@ -47,6 +50,9 @@ typedef int (*FS_CLOSE_FUNCTION)(void* private);
 // function pointer for seek function of filesystem
 typedef int (*FS_SEEK_FUNCTION)(void* private, uint32_t offset, FILE_SEEK_MODE seek_mode);
 
+// function for creating an fs item (file or directory)
+typedef int (*FS_CREATE_ITEM_FUNCTION) (struct disk* disk, const char* name, int type, struct path_part* path);
+
 enum 
 {
     FILE_STAT_READ_ONLY = 0b00000001
@@ -71,6 +77,7 @@ struct  filesystem {
     FS_SEEK_FUNCTION seek;
     FS_STAT_FUNCTION stat;
     FS_CLOSE_FUNCTION close;
+    FS_CREATE_ITEM_FUNCTION create;
 
     char name[20];
 };
@@ -102,6 +109,10 @@ void fs_insert_filesystem(struct filesystem* filesystem);
 int fstat(int fd, struct file_stat* stat);
 // for closing a file
 int fclose(int fd);
+// for creating an item
+// @path: path to create item to
+// @type: 0 for file, 1 for directory  
+int fcreate(const char* name, int type, const char* path);
 
 struct filesystem* fs_resolve(struct disk* disk);
 

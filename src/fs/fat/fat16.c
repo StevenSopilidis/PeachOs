@@ -134,6 +134,7 @@ int fat16_read(struct disk* disk, void* descriptor, uint32_t size, uint32_t nmem
 int fat16_seek(void *private, uint32_t offset, FILE_SEEK_MODE seek_mode);
 int fat16_stat(struct disk* disk, void* private, struct file_stat* stat);
 int fat16_close(void* private);
+int fat16_create(struct disk* disk, const char* name,const char* ext, int type, struct path_part* path);
 
 struct filesystem fat16_fs =
 {
@@ -143,6 +144,7 @@ struct filesystem fat16_fs =
     .seek = fat16_seek,
     .stat = fat16_stat,
     .close= fat16_close,
+    .create = fat16_create,
 };
 
 // initializes the fat16 filesystem
@@ -375,6 +377,11 @@ static uint32_t fat16_get_first_fat_sector(struct fat_private* private)
 {
     return private->header.primary_header.reserved_sectors;
 }
+
+// function that gets the position of the fat table
+static uint32_t fat16_get_fat_position(struct disk* disk) {
+    return fat16_get_first_fat_sector((struct fat_private*)disk->fs_private) * disk->sector_size;
+} 
 
 static int fat16_get_fat_entry(struct disk* disk, int cluster)
 {
@@ -750,4 +757,113 @@ static void fat16_free_file_descriptor(struct fat_file_descriptor* desc) {
 int fat16_close(void* private) {
     fat16_free_file_descriptor((struct fat_file_descriptor*)private);
     return 0;
+}
+
+// returns number of cluster that is free
+static int fat16_find_available_cluster(struct disk* disk) {
+    int res = 0;
+    struct fat_private* private = disk->fs_private;
+    struct disk_stream* stream = private->fat_read_stream;
+
+    uint32_t fat_table_position = fat16_get_fat_position(disk);
+    // first 3 bytes of fat table are skipped
+    disk_seek(stream, fat_table_position + 3);
+
+    if(!stream) {
+        res = -ENOMEM;
+        goto out;
+    }  
+    char* buff = (char *)kzalloc(PEACHOS_FAT16_FAT_ENTRY_SIZE);
+    diskstream_read(stream, (void *)buff, PEACHOS_FAT16_FAT_ENTRY_SIZE);
+
+    int free_cluster = 4;
+
+    while (buff[0] != '\0' && buff[1] != '\0')
+    {
+        disk_seek(stream, stream->pos + 2);
+        diskstream_read(stream, buff, 2);
+        free_cluster++;
+    }
+    
+    kfree(buff);
+    res = free_cluster;
+out:
+    return res;
+}
+
+int fat16_create(struct disk* disk, const char* name, const char* ext, int type, struct path_part* path) {
+    int res = 0;
+
+    struct fat_private* private = disk->fs_private;
+    struct fat_directory* parent_dir = kzalloc(sizeof(struct fat_directory));
+    
+    if(!parent_dir) {
+        res = -ENOMEM;
+        goto out;
+    }
+
+    if(!path) {
+        parent_dir = &private->root_directory;
+    } else {
+        struct fat_item* item = fat16_get_directory_entry(disk, path);
+        if(!item) {
+            res = -EIO;
+            goto out;
+        }
+        if(item->type != FAT_ITEM_TYPE_DIRECTORY) {
+            res = -EINVARG;
+            goto out;
+        }
+        parent_dir = item->directory;
+    }
+
+    // find a cluster to put metadata for item
+    int available_cluster = fat16_find_available_cluster(disk);
+    if (available_cluster < 0) {
+        res = -EIO;
+        goto out;
+    }
+
+    // allocate the entrie for the new item in the fat table
+    uint32_t fat_table_position = fat16_get_fat_position(disk);
+    struct disk_stream* stream = private->fat_read_stream;
+    // each entrie in the fat_table is 2 bytes long
+    disk_seek(stream, fat_table_position + 2 * available_cluster);
+    res = diskstream_write(stream, "0xFFFF", 2);
+    if (res != PEACHOS_ALL_OK)
+        panic("fat16_create error could not write to fat");
+
+    // write item to corresponding position on disk
+    struct fat_item* item = kzalloc(sizeof(struct fat_item));
+    memset(item, 0, sizeof(struct fat_item));
+
+    uint32_t sector_pos = (uint32_t)fat16_cluster_to_sector(private, available_cluster);
+    if (sector_pos == 0) {
+        panic("TEST");
+    }
+
+    if (type == FAT_ITEM_TYPE_FILE)
+    {
+        item->type = FAT_ITEM_TYPE_FILE;
+        item->item = kzalloc(sizeof(struct fat_directory_item));
+        fat16_to_proper_string(item->item->filename, name);
+        fat16_to_proper_string(item->item->ext, ext);
+        item->item->filesize = 0;
+        item->item->high_16_bits_first_cluster = (sector_pos >> 16) & 0xFFFF;
+        item->item->low_16_bits_first_cluster = sector_pos & 0xFFFF;
+    }else {
+        item->type = FAT_ITEM_TYPE_DIRECTORY;
+        item->directory = kzalloc(sizeof(struct fat_directory));
+    }
+
+
+    kfree(item);
+    if (item->type == FAT_ITEM_TYPE_FILE)
+    {
+        kfree(item->item);
+    }else {
+        kfree(item->directory);
+    }
+out:
+    return res;
 }

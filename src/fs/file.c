@@ -248,3 +248,28 @@ int fclose(int fd) {
 out:
     return res;
 }
+
+int fcreate(const char* name, int type, const char* path) {
+    int res = 0;
+    struct path_root* root = pathparser_parse(path, NULL);
+    if (!root) {
+        res = -EIO;
+        goto out;
+    }
+
+    struct disk* disk = disk_get(root->drive_num);
+    if(!disk) {
+        res = -EIO;
+        goto out;
+    }
+
+    if(!disk->filesystem) {
+        res = -EIO;
+        goto out;
+    }
+
+    res = disk->filesystem->create(disk, name, type, root->first);
+    path_parser_free(root);
+out:
+    return res;
+}

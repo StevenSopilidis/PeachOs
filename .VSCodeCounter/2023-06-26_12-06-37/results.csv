@@ -1,0 +1,41 @@
+"filename", "language", "C", "C++", "x86 and x86_64 Assembly", "LinkerScript", "Makefile", "Shell Script", "comment", "blank", "total"
+"/home/stevensopi/Desktop/PeachOs/Makefile", "Makefile", 0, 0, 0, 0, 56, 0, 1, 22, 79
+"/home/stevensopi/Desktop/PeachOs/build.sh", "Shell Script", 0, 0, 0, 0, 0, 4, 1, 0, 5
+"/home/stevensopi/Desktop/PeachOs/src/boot/boot.asm", "x86 and x86_64 Assembly", 0, 0, 112, 0, 0, 0, 18, 24, 154
+"/home/stevensopi/Desktop/PeachOs/src/config.h", "C++", 0, 14, 0, 0, 0, 0, 7, 7, 28
+"/home/stevensopi/Desktop/PeachOs/src/disk/disk.asm", "x86 and x86_64 Assembly", 0, 0, 45, 0, 0, 0, 3, 14, 62
+"/home/stevensopi/Desktop/PeachOs/src/disk/disk.c", "C", 57, 0, 0, 0, 0, 0, 18, 10, 85
+"/home/stevensopi/Desktop/PeachOs/src/disk/disk.h", "C++", 0, 20, 0, 0, 0, 0, 9, 12, 41
+"/home/stevensopi/Desktop/PeachOs/src/disk/stream.c", "C", 85, 0, 0, 0, 0, 0, 4, 17, 106
+"/home/stevensopi/Desktop/PeachOs/src/disk/stream.h", "C++", 0, 13, 0, 0, 0, 0, 0, 5, 18
+"/home/stevensopi/Desktop/PeachOs/src/fs/fat/fat16.c", "C", 667, 0, 0, 0, 0, 0, 40, 118, 825
+"/home/stevensopi/Desktop/PeachOs/src/fs/fat/fat16.h", "C", 5, 0, 0, 0, 0, 0, 0, 4, 9
+"/home/stevensopi/Desktop/PeachOs/src/fs/file.c", "C", 232, 0, 0, 0, 0, 0, 5, 38, 275
+"/home/stevensopi/Desktop/PeachOs/src/fs/file.h", "C", 62, 0, 0, 0, 0, 0, 33, 24, 119
+"/home/stevensopi/Desktop/PeachOs/src/fs/pparser.c", "C", 87, 0, 0, 0, 0, 0, 13, 7, 107
+"/home/stevensopi/Desktop/PeachOs/src/fs/pparser.h", "C", 13, 0, 0, 0, 0, 0, 6, 4, 23
+"/home/stevensopi/Desktop/PeachOs/src/gdt/gdt.asm", "x86 and x86_64 Assembly", 0, 0, 12, 0, 0, 0, 0, 3, 15
+"/home/stevensopi/Desktop/PeachOs/src/gdt/gdt.c", "C", 26, 0, 0, 0, 0, 0, 3, 6, 35
+"/home/stevensopi/Desktop/PeachOs/src/gdt/gdt.h", "C++", 0, 19, 0, 0, 0, 0, 0, 6, 25
+"/home/stevensopi/Desktop/PeachOs/src/idt/idt.asm", "x86 and x86_64 Assembly", 0, 0, 35, 0, 0, 0, 0, 14, 49
+"/home/stevensopi/Desktop/PeachOs/src/idt/idt.c", "C", 37, 0, 0, 0, 0, 0, 3, 8, 48
+"/home/stevensopi/Desktop/PeachOs/src/idt/idt.h", "C++", 0, 21, 0, 0, 0, 0, 2, 5, 28
+"/home/stevensopi/Desktop/PeachOs/src/io/io.asm", "x86 and x86_64 Assembly", 0, 0, 40, 0, 0, 0, 6, 13, 59
+"/home/stevensopi/Desktop/PeachOs/src/io/io.h", "C++", 0, 8, 0, 0, 0, 0, 4, 4, 16
+"/home/stevensopi/Desktop/PeachOs/src/kernel.asm", "x86 and x86_64 Assembly", 0, 0, 32, 0, 0, 0, 6, 12, 50
+"/home/stevensopi/Desktop/PeachOs/src/kernel.c", "C", 80, 0, 0, 0, 0, 0, 8, 23, 111
+"/home/stevensopi/Desktop/PeachOs/src/kernel.h", "C++", 0, 11, 0, 0, 0, 0, 0, 4, 15
+"/home/stevensopi/Desktop/PeachOs/src/linker.ld", "LinkerScript", 0, 0, 0, 27, 0, 0, 0, 4, 31
+"/home/stevensopi/Desktop/PeachOs/src/memory/heap/heap.c", "C", 148, 0, 0, 0, 0, 0, 2, 32, 182
+"/home/stevensopi/Desktop/PeachOs/src/memory/heap/heap.h", "C", 24, 0, 0, 0, 0, 0, 11, 9, 44
+"/home/stevensopi/Desktop/PeachOs/src/memory/heap/kheap.c", "C", 35, 0, 0, 0, 0, 0, 1, 7, 43
+"/home/stevensopi/Desktop/PeachOs/src/memory/heap/kheap.h", "C", 9, 0, 0, 0, 0, 0, 0, 3, 12
+"/home/stevensopi/Desktop/PeachOs/src/memory/memory.c", "C", 29, 0, 0, 0, 0, 0, 1, 3, 33
+"/home/stevensopi/Desktop/PeachOs/src/memory/memory.h", "C", 7, 0, 0, 0, 0, 0, 0, 3, 10
+"/home/stevensopi/Desktop/PeachOs/src/memory/paging/paging.asm", "x86 and x86_64 Assembly", 0, 0, 19, 0, 0, 0, 0, 4, 23
+"/home/stevensopi/Desktop/PeachOs/src/memory/paging/paging.c", "C", 62, 0, 0, 0, 0, 0, 24, 10, 96
+"/home/stevensopi/Desktop/PeachOs/src/memory/paging/paging.h", "C++", 0, 23, 0, 0, 0, 0, 12, 8, 43
+"/home/stevensopi/Desktop/PeachOs/src/status.h", "C", 11, 0, 0, 0, 0, 0, 0, 3, 14
+"/home/stevensopi/Desktop/PeachOs/src/string/string.c", "C", 69, 0, 0, 0, 0, 0, 9, 11, 89
+"/home/stevensopi/Desktop/PeachOs/src/string/string.h", "C", 13, 0, 0, 0, 0, 0, 6, 8, 27
+"Total", "-", 1758, 129, 295, 27, 56, 4, 256, 509, 3034
