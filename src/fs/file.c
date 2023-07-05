@@ -249,7 +249,7 @@ out:
     return res;
 }
 
-int fcreate(const char* name, int type, const char* path) {
+int fcreate(const char* name, const char* ext,int type, const char* path) {
     int res = 0;
     struct path_root* root = pathparser_parse(path, NULL);
     if (!root) {
@@ -268,7 +268,7 @@ int fcreate(const char* name, int type, const char* path) {
         goto out;
     }
 
-    res = disk->filesystem->create(disk, name, type, root->first);
+    res = disk->filesystem->create(disk, name, ext, type, root->first);
     path_parser_free(root);
 out:
     return res;

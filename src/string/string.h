@@ -17,6 +17,8 @@ int to_numeric_digit(char c);
 
 // copies a string to dest from src
 char* strcpy(char* dest, const char* src);
+char* strncpy(char *dest, const char* src, int count);
+
 
 int strncmp(const char* str1, const char* str2, int n);
 int strnlen_terminator(const char* str, int max, char terminator);

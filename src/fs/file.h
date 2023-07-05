@@ -51,7 +51,7 @@ typedef int (*FS_CLOSE_FUNCTION)(void* private);
 typedef int (*FS_SEEK_FUNCTION)(void* private, uint32_t offset, FILE_SEEK_MODE seek_mode);
 
 // function for creating an fs item (file or directory)
-typedef int (*FS_CREATE_ITEM_FUNCTION) (struct disk* disk, const char* name, int type, struct path_part* path);
+typedef int (*FS_CREATE_ITEM_FUNCTION) (struct disk* disk, const char* name, const char* ext, int type, struct path_part* path);
 
 enum 
 {
@@ -112,7 +112,7 @@ int fclose(int fd);
 // for creating an item
 // @path: path to create item to
 // @type: 0 for file, 1 for directory  
-int fcreate(const char* name, int type, const char* path);
+int fcreate(const char* name, const char* ext, int type, const char* path);
 
 struct filesystem* fs_resolve(struct disk* disk);
 

@@ -126,8 +126,13 @@ void kernel_main()
     // enable paging
     enable_paging();
 
-    int res = fcreate("dev", FS_DIRECTORY, "0:/");
+    int res = fcreate("dev", "txt", FS_FILE, "0:/");
     if(!res) {
+        print("Could not create file");
+    }
+
+    res = fopen("dev.txt", "r");
+        if(!res) {
         print("Could not create file");
     }
 

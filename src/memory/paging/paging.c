@@ -45,6 +45,73 @@ void paging_switch(uint32_t* directory)
     current_directory = directory;
 }
 
+void* paging_align_address(void *ptr) {
+    if ((uint32_t)ptr % PAGING_PAGE_SIZE)
+    {
+        return (void*)((uint32_t)ptr + PAGING_PAGE_SIZE - ((uint32_t)ptr % PAGING_PAGE_SIZE));
+    }
+    
+    return ptr;
+}
+
+int paging_map(uint32_t* directory, void* vaddr, void* paddr, int flags) {
+    if (((unsigned int)vaddr % PAGING_PAGE_SIZE) || ((unsigned int)paddr % PAGING_PAGE_SIZE)) {
+        return -EINVARG;
+    }
+    return paging_set(directory, vaddr, (uint32_t) paddr | flags);
+}
+
+int paging_map_range(uint32_t* directory, void* vaddr, void* paddr, int count, int flags) {
+    int res = 0;
+    for (int i = 0; i < count; i++)
+    {
+        res = paging_map(directory, vaddr, paddr, flags);
+        if (res == 0)
+            break;
+        vaddr += PAGING_PAGE_SIZE;
+        paddr += PAGING_PAGE_SIZE;
+    }
+    return res;
+}
+
+int paging_map_to(uint32_t* directory, void* vaddr, void* paddr, void* paddr_end, int flags) {
+    int res = 0;
+    if ((uint32_t)vaddr % PAGING_PAGE_SIZE) {
+        res = -EINVARG;
+        goto out;
+    }
+    if ((uint32_t)paddr % PAGING_PAGE_SIZE) {
+        res = -EINVARG;
+        goto out;
+    }
+    if ((uint32_t)paddr_end % PAGING_PAGE_SIZE) {
+        res = -EINVARG;
+        goto out;
+    }
+    if ((uint32_t)paddr_end < (uint32_t)paddr) {
+        res = -EINVARG;
+        goto out;
+    }
+    uint32_t total_bytes = paddr_end - paddr;
+    int total_pages = total_bytes / PAGING_PAGE_SIZE;
+    res = paging_map_range(directory, vaddr, paddr, total_pages, flags);
+
+out:
+    return res;
+}
+
+void paging_free_4gb(struct paging_4gb_chunk* chunk) {
+    for (int i = 0; i < 1024; i++)
+    {
+        uint32_t entry = chunk->directory_entry[i];
+        // get page table address
+        uint32_t* table = (uint32_t*)(entry & 0xfffff000);
+        kfree(table);
+    }
+    kfree(chunk->directory_entry);
+    kfree(chunk);
+}
+
 // method for checking if virtual address is aligned
 bool paging_is_aligned(void* addr)
 {

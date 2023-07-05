@@ -10,6 +10,9 @@
         "file.h": "c",
         "pparser.h": "c",
         "stdint.h": "c",
-        "status.h": "c"
+        "status.h": "c",
+        "task.h": "c",
+        "paging.h": "c",
+        "process.h": "c"
     }
 }

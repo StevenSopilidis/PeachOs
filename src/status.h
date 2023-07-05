@@ -9,6 +9,6 @@
 #define EFSNOTUS 5
 #define ERDONLY 6 // error read only
 #define EUNIMP 7 // unimplemented
-
+#define EISTKN 8 // taken
 
 #endif

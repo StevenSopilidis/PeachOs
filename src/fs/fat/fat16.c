@@ -67,7 +67,7 @@ struct fat_h
     } shared;
 };
 
-// struct representing a file
+// struct representing a file or subdirectory
 struct fat_directory_item
 {
     uint8_t filename[8];
@@ -134,7 +134,7 @@ int fat16_read(struct disk* disk, void* descriptor, uint32_t size, uint32_t nmem
 int fat16_seek(void *private, uint32_t offset, FILE_SEEK_MODE seek_mode);
 int fat16_stat(struct disk* disk, void* private, struct file_stat* stat);
 int fat16_close(void* private);
-int fat16_create(struct disk* disk, const char* name,const char* ext, int type, struct path_part* path);
+int fat16_create(struct disk* disk, const char* name, const char* ext, int type, struct path_part* path);
 
 struct filesystem fat16_fs =
 {
@@ -791,6 +791,7 @@ out:
     return res;
 }
 
+
 int fat16_create(struct disk* disk, const char* name, const char* ext, int type, struct path_part* path) {
     int res = 0;
 
@@ -834,36 +835,35 @@ int fat16_create(struct disk* disk, const char* name, const char* ext, int type,
         panic("fat16_create error could not write to fat");
 
     // write item to corresponding position on disk
-    struct fat_item* item = kzalloc(sizeof(struct fat_item));
-    memset(item, 0, sizeof(struct fat_item));
+    struct fat_directory_item* item = kzalloc(sizeof(struct fat_directory_item));
+    memset(item, 0, sizeof(struct fat_directory_item));
 
     uint32_t sector_pos = (uint32_t)fat16_cluster_to_sector(private, available_cluster);
     if (sector_pos == 0) {
         panic("TEST");
     }
 
-    if (type == FAT_ITEM_TYPE_FILE)
-    {
-        item->type = FAT_ITEM_TYPE_FILE;
-        item->item = kzalloc(sizeof(struct fat_directory_item));
-        fat16_to_proper_string(item->item->filename, name);
-        fat16_to_proper_string(item->item->ext, ext);
-        item->item->filesize = 0;
-        item->item->high_16_bits_first_cluster = (sector_pos >> 16) & 0xFFFF;
-        item->item->low_16_bits_first_cluster = sector_pos & 0xFFFF;
-    }else {
-        item->type = FAT_ITEM_TYPE_DIRECTORY;
-        item->directory = kzalloc(sizeof(struct fat_directory));
+    item->attribute = 0x00;
+    char* filename_tmp = "";
+    char* ext_tmp = "";
+    fat16_to_proper_string(&filename_tmp, name);
+    fat16_to_proper_string(&ext_tmp, ext);
+    item->filesize = 0;
+    
+    if (type == FAT_ITEM_TYPE_DIRECTORY) {
+        item->attribute |= FAT_FILE_SUBDIRECTORY;
     }
+    item->high_16_bits_first_cluster = (sector_pos >> 16) & 0xFFFF;
+    item->low_16_bits_first_cluster = sector_pos & 0xFFFF;
 
+    // write the file to the parent dir
+    int parent_dir_sector_pos = parent_dir->sector_pos;
+    disk_seek(stream, parent_dir_sector_pos + sizeof(struct fat_directory_item) * parent_dir->total);
+    diskstream_write(stream, (void *)item, sizeof(struct fat_directory_item));
+    diskstream_write(stream, (void *)"0x00", 1);
 
     kfree(item);
-    if (item->type == FAT_ITEM_TYPE_FILE)
-    {
-        kfree(item->item);
-    }else {
-        kfree(item->directory);
-    }
+    kfree(item);
 out:
     return res;
 }
