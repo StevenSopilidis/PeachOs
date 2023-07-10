@@ -126,15 +126,14 @@ void kernel_main()
     // enable paging
     enable_paging();
 
-    int res = fcreate("dev", "txt", FS_FILE, "0:/");
-    if(!res) {
+    int res = fcreate("dev", "bin", FS_FILE, "0:/");
+    if(res != 0) {
         print("Could not create file");
     }
 
-    res = fopen("dev.txt", "r");
-        if(!res) {
-        print("Could not create file");
-    }
+    res = fopen("0:/hello.txt", "r");
+    if(!res)
+        print("Could not open file");
 
     // Enable the system interupts
     enable_interupts();

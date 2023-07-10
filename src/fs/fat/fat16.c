@@ -664,6 +664,10 @@ void* fat16_open(struct disk* disk, struct path_part* path, FILE_MODE mode)
         return ERROR(-ENOMEM);
     }
 
+    // reload the root dir
+    struct fat_private* private = disk->fs_private;
+    fat16_get_root_directory(disk, private, &private->root_directory);
+
     descriptor->item = fat16_get_directory_entry(disk, path);
     if (!descriptor->item)
     {
@@ -791,11 +795,27 @@ out:
     return res;
 }
 
+// padds value with space if necessary
+void padd_value(char* value, int len, int maxLen) {
+    if (len == maxLen)
+        return;
+    int i = len;
+    while (i < maxLen)
+    {
+        value[i] = ' ';
+        i++;
+    }
+}
+
 
 int fat16_create(struct disk* disk, const char* name, const char* ext, int type, struct path_part* path) {
     int res = 0;
 
     struct fat_private* private = disk->fs_private;
+    
+    // reload the root dir
+    fat16_get_root_directory(disk, private, &private->root_directory);
+
     struct fat_directory* parent_dir = kzalloc(sizeof(struct fat_directory));
     
     if(!parent_dir) {
@@ -844,10 +864,10 @@ int fat16_create(struct disk* disk, const char* name, const char* ext, int type,
     }
 
     item->attribute = 0x00;
-    char* filename_tmp = "";
-    char* ext_tmp = "";
-    fat16_to_proper_string(&filename_tmp, name);
-    fat16_to_proper_string(&ext_tmp, ext);
+    strcpy((char *)item->filename, name);
+    strcpy((char *)item->ext, ext);
+    padd_value((char *)item->filename, strlen((char *)item->filename), 8);
+    padd_value((char *)item->ext, strlen((char *)item->ext), 3);
     item->filesize = 0;
     
     if (type == FAT_ITEM_TYPE_DIRECTORY) {
@@ -857,13 +877,55 @@ int fat16_create(struct disk* disk, const char* name, const char* ext, int type,
     item->low_16_bits_first_cluster = sector_pos & 0xFFFF;
 
     // write the file to the parent dir
-    int parent_dir_sector_pos = parent_dir->sector_pos;
-    disk_seek(stream, parent_dir_sector_pos + sizeof(struct fat_directory_item) * parent_dir->total);
-    diskstream_write(stream, (void *)item, sizeof(struct fat_directory_item));
-    diskstream_write(stream, (void *)"0x00", 1);
+    struct fat_directory_item fat_item;
+    memset(&fat_item, 0, sizeof(fat_item));
 
+
+    int root_dir_sector_pos = (private->header.primary_header.fat_copies * private->header.primary_header.sectors_per_fat) + private->header.primary_header.reserved_sectors;
+    int directory_start_pos = root_dir_sector_pos * disk->sector_size;
+    stream = private->directory_stream;
+    if(disk_seek(stream, directory_start_pos) != PEACHOS_ALL_OK)
+    {
+        res = -EIO;
+        goto out;
+    }
+
+    while(1)
+    {
+        if (diskstream_read(stream, &fat_item, sizeof(fat_item)) != PEACHOS_ALL_OK)
+        {
+            res = -EIO;
+            goto out;
+        }
+
+        // the first byte of the filename indicates
+        // if we should continue searching or not
+        if (fat_item.filename[0] == 0x00)
+        {
+            // We are done
+            break;
+        }
+
+        // Is the item unused
+        if (fat_item.filename[0] == 0xE5)
+        {
+            continue;
+        }
+    }
+
+    if(diskstream_write(stream, item, sizeof(struct fat_directory_item)) != PEACHOS_ALL_OK) {
+        res = -EIO;
+        goto out;
+    }
+
+    disk_seek(stream, directory_start_pos);
+    struct fat_directory_item item2;
+    diskstream_read(stream, &item2, sizeof(struct fat_directory_item));
+    print((char *)item2.filename);
+
+    // update the parent dir
     kfree(item);
-    kfree(item);
+    kfree(parent_dir);
 out:
     return res;
 }
