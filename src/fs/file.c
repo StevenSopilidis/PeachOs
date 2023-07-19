@@ -249,7 +249,7 @@ out:
     return res;
 }
 
-int fcreate(const char* name, const char* ext,int type, const char* path) {
+int fcreate(char* name, char* ext,int type, const char* path) {
     int res = 0;
     struct path_root* root = pathparser_parse(path, NULL);
     if (!root) {

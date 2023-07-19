@@ -1,6 +1,7 @@
 [BITS 32]
 
 global _start
+global kernel_registers
 global problem
 global problem2
 extern kernel_main
@@ -38,6 +39,14 @@ _start:
     call kernel_main
 
     jmp $
+
+kernel_registers:
+    mov ax, 10
+    mov ds, ax
+    mov es, ax
+    mov gs, ax
+    mov fs, ax
+    ret
 
 problem:
     int 0

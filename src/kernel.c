@@ -14,6 +14,9 @@
 #include "gdt/gdt.h"
 #include "task/tss.h"
 #include "config.h"
+#include "task/task.h"
+#include "task/process.h"
+#include "status.h"
 
 static uint16_t* video_mem = 0;
 static uint16_t terminal_row = 0;
@@ -79,6 +82,13 @@ void panic(const char* msg) {
     while(1) {}
 }
 
+// switches to page directory to kernel page directory
+// and restore kernel segment
+void kernel_page() {
+    kernel_registers();
+    paging_switch(kernel_chunk);
+}
+
 struct tss tss;
 
 struct gdt gdt_real[PEACHOS_TOTAL_GDT_SEGMENTS];
@@ -122,21 +132,25 @@ void kernel_main()
     kernel_chunk = paging_new_4gb (PAGING_IS_WRITEABLE | PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
     
     // switch to kernel pagign chunk
-    paging_switch(paging_4gb_chunk_get_directory(kernel_chunk));
+    paging_switch(kernel_chunk);
     // enable paging
     enable_paging();
+
+    // struct process* process = 0;
+    // int res = process_load("0:/blank.bin", &process);
+    // if (res != PEACHOS_ALL_OK)
+    //     panic("Failed to load blank.bin\n");
+
+    // task_run_first_ever_task();
 
     int res = fcreate("dev", "bin", FS_FILE, "0:/");
     if(res != 0) {
         print("Could not create file");
     }
 
-    res = fopen("0:/hello.txt", "r");
-    if(!res)
-        print("Could not open file");
-
-    // Enable the system interupts
-    enable_interupts();
+    // res = fopen("0:/hello.txt", "r");
+    // if(!res)
+    //     print("Could not open file");
 
     while(1) {}
 }   

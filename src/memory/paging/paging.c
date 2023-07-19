@@ -39,10 +39,10 @@ uint32_t* paging_4gb_chunk_get_directory(struct paging_4gb_chunk* chunk)
 }
 
 // method for swapping page directories
-void paging_switch(uint32_t* directory)
+void paging_switch(struct paging_4gb_chunk* directory)
 {
-    paging_load_directory(directory);
-    current_directory = directory;
+    paging_load_directory(directory->directory_entry);
+    current_directory = directory->directory_entry;
 }
 
 void* paging_align_address(void *ptr) {
@@ -54,14 +54,14 @@ void* paging_align_address(void *ptr) {
     return ptr;
 }
 
-int paging_map(uint32_t* directory, void* vaddr, void* paddr, int flags) {
+int paging_map(struct paging_4gb_chunk* directory, void* vaddr, void* paddr, int flags) {
     if (((unsigned int)vaddr % PAGING_PAGE_SIZE) || ((unsigned int)paddr % PAGING_PAGE_SIZE)) {
         return -EINVARG;
     }
-    return paging_set(directory, vaddr, (uint32_t) paddr | flags);
+    return paging_set(directory->directory_entry, vaddr, (uint32_t) paddr | flags);
 }
 
-int paging_map_range(uint32_t* directory, void* vaddr, void* paddr, int count, int flags) {
+int paging_map_range(struct paging_4gb_chunk* directory, void* vaddr, void* paddr, int count, int flags) {
     int res = 0;
     for (int i = 0; i < count; i++)
     {
@@ -74,7 +74,7 @@ int paging_map_range(uint32_t* directory, void* vaddr, void* paddr, int count, i
     return res;
 }
 
-int paging_map_to(uint32_t* directory, void* vaddr, void* paddr, void* paddr_end, int flags) {
+int paging_map_to(struct paging_4gb_chunk* directory, void* vaddr, void* paddr, void* paddr_end, int flags) {
     int res = 0;
     if ((uint32_t)vaddr % PAGING_PAGE_SIZE) {
         res = -EINVARG;
