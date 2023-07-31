@@ -17,6 +17,7 @@
 #include "task/task.h"
 #include "task/process.h"
 #include "status.h"
+#include "isr80h/isr80h.h"
 
 static uint16_t* video_mem = 0;
 static uint16_t terminal_row = 0;
@@ -136,17 +137,20 @@ void kernel_main()
     // enable paging
     enable_paging();
 
-    // struct process* process = 0;
-    // int res = process_load("0:/blank.bin", &process);
-    // if (res != PEACHOS_ALL_OK)
-    //     panic("Failed to load blank.bin\n");
+    // register kernel commands
+    isr80h_register_commands();
 
-    // task_run_first_ever_task();
+    struct process* process = 0;
+    int res = process_load("0:/blank.bin", &process);
+    if (res != PEACHOS_ALL_OK)
+        panic("Failed to load blank.bin\n");
 
-    int res = fcreate("dev", "bin", FS_FILE, "0:/");
-    if(res != 0) {
-        print("Could not create file");
-    }
+    task_run_first_ever_task();
+
+    // int res = fcreate("dev", "bin", FS_FILE, "0:/");
+    // if(res != 0) {
+    //     print("Could not create file");
+    // }
 
     // res = fopen("0:/hello.txt", "r");
     // if(!res)
