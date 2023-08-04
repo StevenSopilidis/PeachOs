@@ -147,14 +147,23 @@ void kernel_main()
 
     task_run_first_ever_task();
 
-    // int res = fcreate("dev", "bin", FS_FILE, "0:/");
+    // int res = fcreate("dev", "", FS_DIRECTORY, "0:/");
     // if(res != 0) {
-    //     print("Could not create file");
+    //     print("Could not create directory\n");
+    //     goto out;
     // }
 
-    // res = fopen("0:/hello.txt", "r");
-    // if(!res)
-    //     print("Could not open file");
+    // res = fcreate("test", "bin", FS_FILE, "0:/dev");
+    // if (res != 0) {
+    //     print("Could not create file\n");
+    //     goto out;
+    // }
 
+    // res = fopen("0:/dev/test.bin", "r");
+    // if(!res)
+    //     print("Could not open file\n");
+    
+
+out:
     while(1) {}
 }   

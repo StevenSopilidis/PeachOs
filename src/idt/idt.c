@@ -73,6 +73,7 @@ void* isr80h_handle_command(int command, struct interrupt_frame* frame) {
         return 0;
 
     result = command_func(frame);
+
     return result;
 }
 

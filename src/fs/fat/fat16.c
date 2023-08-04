@@ -582,6 +582,7 @@ out:
     }
     return directory;
 }
+
 struct fat_item* fat16_new_fat_item_for_directory_item(struct disk* disk, struct fat_directory_item* item)
 {
     struct fat_item* f_item = kzalloc(sizeof(struct fat_item));
@@ -594,10 +595,10 @@ struct fat_item* fat16_new_fat_item_for_directory_item(struct disk* disk, struct
     {
         f_item->directory = fat16_load_fat_directory(disk, item);
         f_item->type = FAT_ITEM_TYPE_DIRECTORY;
+    } else {
+        f_item->type = FAT_ITEM_TYPE_FILE;
+        f_item->item = fat16_clone_directory_item(item, sizeof(struct fat_directory_item));
     }
-
-    f_item->type = FAT_ITEM_TYPE_FILE;
-    f_item->item = fat16_clone_directory_item(item, sizeof(struct fat_directory_item));
     return f_item;
 }
 
@@ -764,30 +765,43 @@ int fat16_close(void* private) {
 }
 
 // returns number of cluster that is free
-static int fat16_find_available_cluster(struct disk* disk) {
+static int fat16_find_available_cluster_and_allocate(struct disk* disk) {
     int res = 0;
     struct fat_private* private = disk->fs_private;
     struct disk_stream* stream = private->fat_read_stream;
 
     uint32_t fat_table_position = fat16_get_fat_position(disk);
     // first 3 entries of fat table are skipped
-    disk_seek(stream, fat_table_position + 3);
+    // times 2 because each entry is two bytes
+    disk_seek(stream, fat_table_position + (3 * 2));
 
     if(!stream) {
         res = -ENOMEM;
         goto out;
-    }  
+    }
+
     char* buff = (char *)kzalloc(PEACHOS_FAT16_FAT_ENTRY_SIZE);
     diskstream_read(stream, (void *)buff, PEACHOS_FAT16_FAT_ENTRY_SIZE);
 
     int free_cluster = 4;
 
-    while (buff[0] != '\0' && buff[1] != '\0')
+    while (1)
     {
-        disk_seek(stream, stream->pos + 2);
-        diskstream_read(stream, buff, 2);
+        diskstream_read(stream, (void *)buff, 2);
+        if (buff[0] == '\0' && buff[1] == '\0')
+            break; 
         free_cluster++;
     }
+
+    disk_seek(stream, stream->pos - 2);
+    res = diskstream_write(stream, (void *)"FF", 2);
+    if (res != PEACHOS_ALL_OK) {
+        res = -EIO;
+        goto out;
+    }
+
+    disk_seek(stream, fat_table_position + (free_cluster* 2));
+    diskstream_read(stream, (void *)buff, 2);
     
     kfree(buff);
     res = free_cluster;
@@ -824,31 +838,29 @@ int fat16_create(struct disk* disk, char* name, char* ext, int type, struct path
     } 
 
     // create the item to store in filesystem
+    char* name_tmp = kzalloc(sizeof(char) * 8);
+    char* ext_tmp = kzalloc(sizeof(char) * 8);
+    strcpy(name_tmp, name);
+    strcpy(ext_tmp, ext);
+
     padd_value(name, strlen(name), 8);
-    padd_value(ext, strlen(name), 3);
-    strcpy((char *)new_item->filename, name);
-    strcpy((char *)new_item->ext, ext);
+    padd_value(ext, strlen(ext), 3);
+    strcpy((char *)new_item->filename, name_tmp);
+    strcpy((char *)new_item->ext, ext_tmp);
     new_item->attribute = 0;
     new_item->filesize = 0;
     new_item->reserved = 0;
+
+    kfree(name_tmp);
+    kfree(ext_tmp);
 
     // if user wants to create a subdirectory
     if (type == FAT_ITEM_TYPE_DIRECTORY) {
         new_item->attribute |= FAT_FILE_SUBDIRECTORY;
     }
 
-    int available_cluster = fat16_find_available_cluster(disk);
+    int available_cluster = fat16_find_available_cluster_and_allocate(disk);
     if (available_cluster < 0) {
-        res = -EIO;
-        goto out;
-    }
-
-    // allocate entry in first fat
-    struct disk_stream* stream = private->fat_read_stream;
-    uint32_t fat_positon = fat16_get_fat_position(disk);
-    disk_seek(stream, fat_positon + (available_cluster * 2));
-    res = diskstream_write(stream, "0xFFFF", 2);
-    if (res != PEACHOS_ALL_OK) {
         res = -EIO;
         goto out;
     }
@@ -878,6 +890,21 @@ int fat16_create(struct disk* disk, char* name, char* ext, int type, struct path
         parent_dir = item->directory;
     }
 
+    if (parent_dir->total == private->header.primary_header.root_dir_entries) {
+        res = -EDIRFULL;
+        goto out;
+    }
+
+    struct disk_stream* stream = private->directory_stream;
+    disk_seek(stream, (parent_dir->sector_pos * private->header.primary_header.bytes_per_sector) + (parent_dir->total * sizeof(struct fat_directory_item)));
+    res = diskstream_write(stream, (void *)(new_item), sizeof(struct fat_directory_item));
+    if (res != PEACHOS_ALL_OK) {
+        res = -EIO;
+        goto out;
+    }
+
+    disk_seek(stream, (parent_dir->sector_pos * private->header.primary_header.bytes_per_sector) + (parent_dir->total * sizeof(struct fat_directory_item)));
+    diskstream_read(stream, (void *)new_item, sizeof(struct fat_directory_item));
     
 
     kfree(parent_dir);
