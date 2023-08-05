@@ -560,7 +560,10 @@ struct fat_directory* fat16_load_fat_directory(struct disk* disk, struct fat_dir
     int cluster_sector = fat16_cluster_to_sector(fat_private, cluster);
     int total_items = fat16_get_total_items_for_directory(disk, cluster_sector);
     directory->total = total_items;
+    directory->sector_pos = fat16_cluster_to_sector(fat_private, cluster);
     int directory_size = directory->total * sizeof(struct fat_directory_item);
+    directory->ending_sector_pos = directory->sector_pos + (directory_size / disk->sector_size);
+
     directory->item = kzalloc(directory_size);
     if (!directory->item)
     {
@@ -903,9 +906,6 @@ int fat16_create(struct disk* disk, char* name, char* ext, int type, struct path
         goto out;
     }
 
-    disk_seek(stream, (parent_dir->sector_pos * private->header.primary_header.bytes_per_sector) + (parent_dir->total * sizeof(struct fat_directory_item)));
-    diskstream_read(stream, (void *)new_item, sizeof(struct fat_directory_item));
-    
 
     kfree(parent_dir);
     kfree(new_item);

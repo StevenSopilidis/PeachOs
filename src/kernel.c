@@ -140,29 +140,12 @@ void kernel_main()
     // register kernel commands
     isr80h_register_commands();
 
-    struct process* process = 0;
-    int res = process_load("0:/blank.bin", &process);
-    if (res != PEACHOS_ALL_OK)
-        panic("Failed to load blank.bin\n");
+    // struct process* process = 0;
+    // int res = process_load("0:/blank.bin", &process);
+    // if (res != PEACHOS_ALL_OK)
+    //     panic("Failed to load blank.bin\n");
 
-    task_run_first_ever_task();
-
-    // int res = fcreate("dev", "", FS_DIRECTORY, "0:/");
-    // if(res != 0) {
-    //     print("Could not create directory\n");
-    //     goto out;
-    // }
-
-    // res = fcreate("test", "bin", FS_FILE, "0:/dev");
-    // if (res != 0) {
-    //     print("Could not create file\n");
-    //     goto out;
-    // }
-
-    // res = fopen("0:/dev/test.bin", "r");
-    // if(!res)
-    //     print("Could not open file\n");
-    
+    // task_run_first_ever_task();
 
 out:
     while(1) {}

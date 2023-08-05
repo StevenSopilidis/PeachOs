@@ -11,5 +11,6 @@
 #define EUNIMP 7 // unimplemented
 #define EISTKN 8 // taken
 #define EDIRFULL 9 // full directory
+#define EALREADYEXISTS 10 // item already exists
 
 #endif
