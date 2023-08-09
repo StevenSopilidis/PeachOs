@@ -3,6 +3,7 @@
 #include "config.h"
 #include "kernel.h"
 #include "../memory.h"
+#include "print/print.h"
 
 struct heap kernel_heap;
 struct heap_table kernel_heap_table;
@@ -17,7 +18,7 @@ void kheap_init()
     int res = heap_create(&kernel_heap, (void*)(PEACHOS_HEAP_ADDRESS), end, &kernel_heap_table);
     if (res < 0)
     {
-        // print("Failed to create heap\n");
+        print("Failed to create heap\n");
     }
 
 }

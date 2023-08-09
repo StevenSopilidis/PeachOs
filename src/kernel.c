@@ -23,7 +23,7 @@
 static struct paging_4gb_chunk* kernel_chunk = 0;
 
 void panic(const char* msg) {
-    // print(msg);
+    print(msg);
     while(1) {}
 }
 
@@ -92,9 +92,6 @@ void kernel_main()
     // task_run_first_ever_task();
 
     terminal_initialize();
-
-    char* str = kzalloc(15);
-    strcpy(str, "Hallo world\n");
 
 out:
     while(1) {}

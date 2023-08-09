@@ -7,6 +7,7 @@
 #include "fat/fat16.h"
 #include "status.h"
 #include "kernel.h"
+#include "print/print.h"
 
 struct filesystem* filesystems[PEACHOS_MAX_FILESYSTEMS];
 struct file_descriptor* file_descriptors[PEACHOS_MAX_FILE_DESCRIPTORS];
@@ -31,7 +32,7 @@ void fs_insert_filesystem(struct filesystem* filesystem)
     fs = fs_get_free_filesystem();
     if (!fs)
     {
-        // print("Problem inserting filesystem"); 
+        print("Problem inserting filesystem"); 
         while(1) {}
     }
 

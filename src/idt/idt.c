@@ -4,6 +4,8 @@
 #include "memory/memory.h"
 #include "task/task.h"
 #include "../io/io.h"
+#include "print/print.h"
+
 
 static ISR80H_COMMAND isr80h_commands[PEACHOS_MAX_ISR80H_COMMANDS];
 
@@ -11,11 +13,11 @@ struct idt_desc idt_descriptors[PEACHOS_TOTAL_INTERRUPTS];
 struct idtr_desc idtr_descriptor;
 
 void idt_zero() {
-    // print("Devide by zero error\n");
+    print("Devide by zero error\n");
 }
 
 void int21h_handler() {
-    // print("Keyboard pressed\n");
+    print("Keyboard pressed\n");
     // acknowledge interupt from PIC
     outb(0x20, 0x20); 
 }

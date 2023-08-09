@@ -6,6 +6,6 @@
 
 void terminal_initialize();
 void print(const char* str);
-
+void printf(const char* format, ...);
 
 #endif
