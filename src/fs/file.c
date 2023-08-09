@@ -31,7 +31,7 @@ void fs_insert_filesystem(struct filesystem* filesystem)
     fs = fs_get_free_filesystem();
     if (!fs)
     {
-        print("Problem inserting filesystem"); 
+        // print("Problem inserting filesystem"); 
         while(1) {}
     }
 

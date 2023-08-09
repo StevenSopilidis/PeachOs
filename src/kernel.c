@@ -18,68 +18,12 @@
 #include "task/process.h"
 #include "status.h"
 #include "isr80h/isr80h.h"
-
-static uint16_t* video_mem = 0;
-static uint16_t terminal_row = 0;
-static uint16_t terminal_col = 0;
-
-
-uint16_t terminal_make_char(char c,char colour)
-{
-    return (colour << 8) | c;
-}
-
-void terminal_putchar(int x, int y, char c, char colour)
-{
-    video_mem[(y * VGA_WIDTH) + x] = terminal_make_char(c, colour);
-}
-
-void terminal_writechar(char c, char colour)
-{
-    if (c == '\n') {
-        terminal_col = 0;
-        terminal_row++;
-        return;
-    }
-    terminal_putchar(terminal_col, terminal_row, c, colour);
-    terminal_col += 1;
-    if (terminal_col == VGA_WIDTH) {
-        terminal_col = 0;
-        terminal_row++;
-    }
-}
-
-// clear the terminal 
-void terminal_initialize()
-{
-    video_mem = (uint16_t* )0xb8000;
-    terminal_col = 0;
-    terminal_row = 0;
-    for (int i = 0; i < VGA_HEIGHT; i++)
-    {
-        for (int j = 0; j < VGA_WIDTH; j++)
-        {
-            terminal_putchar(j, i, ' ', 0);
-        }
-    }
-    
-}
-
-void print(const char* str)
-{
-    size_t len = strlen(str);
-    for (size_t i = 0; i < len; i++)
-    {
-        terminal_writechar(str[i], 15);
-    }
-    
-}
-
+#include "print/print.h"
 
 static struct paging_4gb_chunk* kernel_chunk = 0;
 
 void panic(const char* msg) {
-    print(msg);
+    // print(msg);
     while(1) {}
 }
 
@@ -140,12 +84,17 @@ void kernel_main()
     // register kernel commands
     isr80h_register_commands();
 
-    struct process* process = 0;
-    int res = process_load("0:/blank.bin", &process);
-    if (res != PEACHOS_ALL_OK)
-        panic("Failed to load blank.bin\n");
+    // struct process* process = 0;
+    // int res = process_load("0:/blank.bin", &process);
+    // if (res != PEACHOS_ALL_OK)
+    //     panic("Failed to load blank.bin\n");
 
-    task_run_first_ever_task();
+    // task_run_first_ever_task();
+
+    terminal_initialize();
+
+    char* str = kzalloc(15);
+    strcpy(str, "Hallo world\n");
 
 out:
     while(1) {}

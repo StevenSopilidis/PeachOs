@@ -7,6 +7,6 @@ void* isr80h_command1_print(struct interrupt_frame* frame) {
     char buff[1024];
     copy_string_from_task(task_current(), user_space_msg_buffer, buff, sizeof(buff));
     
-    print(buff);
+    // print(buff);
     return 0;
 }
