@@ -1,11 +1,16 @@
 ENTRY(_start)
 OUTPUT_FORMAT(binary)
-SECTIONS 
+SECTIONS
 {
-    . = 1M; /* our kernel will be loaded into 1 MB of memory (location=0x100000)*/
+    . = 1M;
     .text : ALIGN(4096)
     {
         *(.text)
+    }
+
+    .asm : ALIGN(4096)
+    {
+        *(.asm)
     }
 
     .rodata : ALIGN(4096)
@@ -22,10 +27,5 @@ SECTIONS
     {
         *(COMMON)
         *(.bss)
-    }
-
-    .asm : ALIGN(4096)
-    {
-        *(.asm)
     }
 }

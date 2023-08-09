@@ -4,10 +4,12 @@ section .asm
 global _start
 
 _start:
-    push 20
-    push 30
-    mov eax, 0 ; Command 0 SUM
+    push message
+    mov eax, 1 ; Print command
     int 0x80
-    add esp, 8 ; restore stack
+    add esp, 4 ; restore stack
 
     jmp $
+
+section .data
+message: db "Hallo! from the users process", 0

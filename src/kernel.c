@@ -140,12 +140,12 @@ void kernel_main()
     // register kernel commands
     isr80h_register_commands();
 
-    // struct process* process = 0;
-    // int res = process_load("0:/blank.bin", &process);
-    // if (res != PEACHOS_ALL_OK)
-    //     panic("Failed to load blank.bin\n");
+    struct process* process = 0;
+    int res = process_load("0:/blank.bin", &process);
+    if (res != PEACHOS_ALL_OK)
+        panic("Failed to load blank.bin\n");
 
-    // task_run_first_ever_task();
+    task_run_first_ever_task();
 
 out:
     while(1) {}
