@@ -16,6 +16,7 @@
         "process.h": "c",
         "config.h": "c",
         "io.h": "c",
-        "print.h": "c"
+        "print.h": "c",
+        "keyboard.h": "c"
     }
 }

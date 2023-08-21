@@ -19,6 +19,7 @@
 #include "status.h"
 #include "isr80h/isr80h.h"
 #include "print/print.h"
+#include "keyboard/keyboard.h"
 
 static struct paging_4gb_chunk* kernel_chunk = 0;
 
@@ -84,14 +85,18 @@ void kernel_main()
     // register kernel commands
     isr80h_register_commands();
 
-    // struct process* process = 0;
-    // int res = process_load("0:/blank.bin", &process);
-    // if (res != PEACHOS_ALL_OK)
-    //     panic("Failed to load blank.bin\n");
+    // init keyboard
+    keyboard_init();
 
-    // task_run_first_ever_task();
+    struct process* process = 0;
+    int res = process_load("0:/blank.bin", &process);
+    if (res != PEACHOS_ALL_OK)
+        panic("Failed to load blank.bin\n");
+
+    task_run_first_ever_task();
 
     terminal_initialize();
+
 
 out:
     while(1) {}

@@ -131,8 +131,7 @@ void printf(const char* format, ...) {
     memset(buffer, 0, strlen(format));
     int32_t integer = 0;
     char *string = 0;
-    double num = 0.f;
-
+    
     va_list args;
     va_start(args, format);
     for (size_t i = 0; format[i] != '\0'; i++)
@@ -158,6 +157,12 @@ void printf(const char* format, ...) {
             case 's': // string
                 string = va_arg(args, char*);
                 buffer_size += read_string(buffer, buffer_size, string);
+                break;
+            case 'p': // pointer
+                buffer[buffer_size++] = '0';
+                buffer[buffer_size++] = 'x';
+                integer = (uint32_t)va_arg(args, void *);
+                buffer_size += udecimal_to_string(buffer, buffer_size, integer);
                 break;
             default:
                 buffer[buffer_size++] = '%';
