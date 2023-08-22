@@ -131,16 +131,19 @@ struct fat_private
 int fat16_resolve(struct disk* disk);
 void* fat16_open(struct disk* disk, struct path_part* path, FILE_MODE mode);
 int fat16_read(struct disk* disk, void* descriptor, uint32_t size, uint32_t nmemb, char* out_ptr);
+int fat16_write(struct disk* disk, void* descriptor, void* data, uint32_t size, uint32_t offset);
 int fat16_seek(void *private, uint32_t offset, FILE_SEEK_MODE seek_mode);
 int fat16_stat(struct disk* disk, void* private, struct file_stat* stat);
 int fat16_close(void* private);
 int fat16_create(struct disk* disk, char* name, char* ext, int type, struct path_part* path);
+
 
 struct filesystem fat16_fs =
 {
     .resolve = fat16_resolve,
     .open = fat16_open,
     .read = fat16_read,
+    .write = fat16_write,
     .seek = fat16_seek,
     .stat = fat16_stat,
     .close= fat16_close,
@@ -656,10 +659,10 @@ out:
 
 void* fat16_open(struct disk* disk, struct path_part* path, FILE_MODE mode)
 {
-    if (mode != FILE_MODE_READ)
-    {
-        return ERROR(-ERDONLY);
-    }
+    // if (mode != FILE_MODE_READ)
+    // {
+    //     return ERROR(-ERDONLY);
+    // }
 
     struct fat_file_descriptor* descriptor = 0;
     descriptor = kzalloc(sizeof(struct fat_file_descriptor));
@@ -681,6 +684,27 @@ void* fat16_open(struct disk* disk, struct path_part* path, FILE_MODE mode)
     descriptor->pos = 0;
     return descriptor;
 }
+
+// returns the total ammount of data that was written
+// or error if something went wrong
+int fat16_write(struct disk* disk, void* descriptor, void* data, uint32_t size, uint32_t offset) {
+    int res = 0;
+    
+    struct fat_file_descriptor* fat_desc = descriptor;
+    struct fat_directory_item* item = fat_desc->item->item;
+    
+    if ((item->attribute & FAT_FILE_SUBDIRECTORY) != 0) {
+        res = -EWRITETODIR;
+        goto out;
+    }
+
+
+
+    
+out:
+    return res;
+}
+
 
 
 // returns the ammount of nmembs that were successfully read

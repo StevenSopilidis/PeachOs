@@ -12,5 +12,6 @@
 #define EISTKN 8 // taken
 #define EDIRFULL 9 // full directory
 #define EALREADYEXISTS 10 // item already exists
+#define EWRITETODIR 11 // trying to write to a directory
 
 #endif

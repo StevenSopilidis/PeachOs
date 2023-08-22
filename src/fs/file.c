@@ -190,6 +190,18 @@ out:
     return res;
 }
 
+int fwrite(void* data, uint32_t size, uint32_t offset, int fd) {
+    if (size == 0 || fd < 1)
+        return -EINVARG;
+    
+    struct file_descriptor* desc = file_get_descriptor(fd);
+    if (!desc) 
+        return -EINVARG;
+    
+    return desc->filesystem->write(desc->disk, desc->private, data, size, offset);
+}
+
+
 int fread(void* ptr, uint32_t size, uint32_t nmemb, int fd) {
     int res = 0;
     if (size == 0 || nmemb == 0 || fd < 1) {

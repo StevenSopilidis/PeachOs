@@ -53,6 +53,9 @@ typedef int (*FS_SEEK_FUNCTION)(void* private, uint32_t offset, FILE_SEEK_MODE s
 // function for creating an fs item (file or directory)
 typedef int (*FS_CREATE_ITEM_FUNCTION) (struct disk* disk, char* name, char* ext, int type, struct path_part* path);
 
+// function for writing to a file
+typedef int (*FS_WRITE_FUNCTION)(struct disk* disk, void* private, void* data, uint32_t size, uint32_t offset);
+
 enum 
 {
     FILE_STAT_READ_ONLY = 0b00000001
@@ -78,6 +81,7 @@ struct  filesystem {
     FS_STAT_FUNCTION stat;
     FS_CLOSE_FUNCTION close;
     FS_CREATE_ITEM_FUNCTION create;
+    FS_WRITE_FUNCTION write;
 
     char name[20];
 };
@@ -101,6 +105,8 @@ void fs_init();
 int fopen(const char* filename, const char* mode_string);
 // to read file
 int fread(void* ptr, uint32_t size, uint32_t nmemb, int fd);
+// to write to a file
+int fwrite(void* data, uint32_t size, uint32_t offset, int fd);
 // to seek a file
 int fseek(int fd, uint32_t offset, FILE_SEEK_MODE whence);
 // for inserting a filesystem

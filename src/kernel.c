@@ -47,6 +47,10 @@ struct gdt_structured gdt_structured[PEACHOS_TOTAL_GDT_SEGMENTS] = {
     {.base = (uint32_t)&tss, .limit=sizeof(tss), .type = 0xE9}      // TSS Segment
 };
 
+void pic_interrupt_timer_routine(struct interrupt_frame* frame) {
+    print("Timer\n");
+}
+
 void kernel_main()
 {
     terminal_initialize();
@@ -84,6 +88,8 @@ void kernel_main()
 
     // register kernel commands
     isr80h_register_commands();
+
+    idt_register_interrupt_callback(0x20, pic_interrupt_timer_routine);
 
     // init keyboard
     keyboard_init();
