@@ -46,6 +46,6 @@ extern void disable_interupts();
 extern void isr80h_wrapper();
 void idt_init();
 void isr80h_register_command(int command_id, ISR80H_COMMAND command);
-
+void interrupt_handler(int interrupt, struct interrupt_frame* frame);
 
 #endif

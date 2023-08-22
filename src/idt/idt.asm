@@ -1,70 +1,108 @@
 section .asm
 
-global int21h
-global idt_load
-global no_interrupt
-global enable_interupts
-global disable_interupts
-global isr80h_wrapper
-
 extern int21h_handler
 extern no_interrupt_handler
 extern isr80h_handler
+extern interrupt_handler
 
-disable_interupts:
+global idt_load
+global no_interrupt
+global enable_interrupts
+global disable_interrupts
+global isr80h_wrapper
+global interrupt_pointer_table
+
+enable_interrupts:
+    sti
+    ret
+
+disable_interrupts:
     cli
     ret
 
-enable_interupts:
-    sti
-    ret
 
 idt_load:
     push ebp
     mov ebp, esp
 
-    mov ebx, [ebp+8] ; first argument that we passed
+    mov ebx, [ebp+8]
     lidt [ebx]
+    pop ebp    
+    ret
 
-    pop ebp 
-    ret 
 
-int21h: ; 21fist interupt
-    cli
+no_interrupt:
     pushad
-
-    call int21h_handler ; handler from c
-
+    call no_interrupt_handler
     popad
-    sti
-    iret ; return from interupt
+    iret
 
-no_interrupt: ; when no interupt is set 
-    cli
-    pushad
+%macro interrupt 1
+    global int%1
+    int%1:
+        ; INTERRUPT FRAME START
+        ; ALREADY PUSHED TO US BY THE PROCESSOR UPON ENTRY TO THIS INTERRUPT
+        ; uint32_t ip
+        ; uint32_t cs;
+        ; uint32_t flags
+        ; uint32_t sp;
+        ; uint32_t ss;
+        ; Pushes the general purpose registers to the stack
+        pushad
+        ; Interrupt frame end
+        push esp
+        push dword %1
+        call interrupt_handler
+        add esp, 8
+        popad
+        iret
+%endmacro
 
-    call no_interrupt_handler ; handler from c
-
-    popad
-    sti
-    iret ; return from interupt
+%assign i 0
+%rep 512
+    interrupt i
+%assign i i+1
+%endrep
 
 isr80h_wrapper:
-    cli
+    ; INTERRUPT FRAME START
+    ; ALREADY PUSHED TO US BY THE PROCESSOR UPON ENTRY TO THIS INTERRUPT
+    ; uint32_t ip
+    ; uint32_t cs;
+    ; uint32_t flags
+    ; uint32_t sp;
+    ; uint32_t ss;
+    ; Pushes the general purpose registers to the stack
     pushad
+    
+    ; INTERRUPT FRAME END
 
+    ; Push the stack pointer so that we are pointing to the interrupt frame
     push esp
-    ; eax will contain the kernel command to invoke
+
+    ; EAX holds our command lets push it to the stack for isr80h_handler
     push eax
     call isr80h_handler
-    mov dword[tmp_res], eax ; return result
+    mov dword[tmp_res], eax
     add esp, 8
-   
+
+    ; Restore general purpose registers for user land
     popad
     mov eax, [tmp_res]
-    sti
     iretd
 
 section .data
-; used to store the return result of isr80h_handler
+; Inside here is stored the return result from isr80h_handler
 tmp_res: dd 0
+
+
+%macro interrupt_array_entry 1
+    dd int%1
+%endmacro
+
+interrupt_pointer_table:
+%assign i 0
+%rep 512
+    interrupt_array_entry i
+%assign i i+1
+%endrep

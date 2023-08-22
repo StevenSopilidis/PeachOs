@@ -6,6 +6,9 @@
 #include "../io/io.h"
 #include "print/print.h"
 
+// define in idt.asm
+// pointer to interrupt handler routines
+extern void* interrupt_pointer_table[PEACHOS_TOTAL_INTERRUPTS];
 
 static ISR80H_COMMAND isr80h_commands[PEACHOS_MAX_ISR80H_COMMANDS];
 
@@ -16,13 +19,11 @@ void idt_zero() {
     print("Devide by zero error\n");
 }
 
-void int21h_handler() {
-    print("Keyboard pressed\n");
-    // acknowledge interupt from PIC
+void no_interrupt_handler() {   
     outb(0x20, 0x20); 
 }
 
-void no_interrupt_handler() {   
+void interrupt_handler(int interrupt, struct interrupt_frame* frame) {
     outb(0x20, 0x20); 
 }
 
@@ -44,11 +45,10 @@ void idt_init() {
 
     for (size_t i = 0; i < PEACHOS_TOTAL_INTERRUPTS; i++)
     {
-        idt_set(i, no_interrupt);
+        idt_set(i, interrupt_pointer_table[i]);
     }
     
     idt_set(0, idt_zero);
-    idt_set(0x21, int21h);
     idt_set(0x80, isr80h_wrapper);
 
     idt_load(&idtr_descriptor);
