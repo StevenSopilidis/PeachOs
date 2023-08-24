@@ -2,8 +2,12 @@
 #include "io/io.h"
 #include "stddef.h"
 #include "ps2.h"
+#include "kernel.h"
+#include "idt/idt.h"
+#include "print/print.h"
 
 int ps2_keyboard_init();
+void ps2_keyboard_handle_interrupt();
 
 // scan set1
 static uint8_t keyboard_scan_set_one[] = {
@@ -21,12 +25,14 @@ static uint8_t keyboard_scan_set_one[] = {
     '6', '+', '1', '2', '3', '0', '.'
 };
 
+
 struct keyboard ps2_keyboard = {
     .name = {"ps2"},
     .init = ps2_keyboard_init
 };
 
 int ps2_keyboard_init() {
+    idt_register_interrupt_callback(ISR_KEYBOARD_INTERRUPT, ps2_keyboard_handle_interrupt);
     outb(PS2_PORT, PS2_COMMAND_ENABLE_FIRST_PORT); // enable ps/2 port
     return 0;
 }
@@ -42,7 +48,22 @@ uint8_t ps2_keyboard_scancode_to_char(uint8_t scancode) {
 
 // interrupt handler for keyboard being pressed
 void ps2_keyboard_handle_interrupt() {
+    kernel_page();
+    uint8_t scancode = 0;
+    scancode = insb(KEYBOARD_INPUT_PORT);
+    insb(KEYBOARD_INPUT_PORT); 
 
+    // if key release
+    if (scancode & PS2_KEYBORAD_KEY_RELEASED)
+        return;
+
+    // if key pressed 
+    char c = ps2_keyboard_scancode_to_char(scancode);
+    if ( c != 0) {
+        keyboard_push(c);
+    }
+
+    task_page();
 }
 
 struct keyboard* ps2_init() {
