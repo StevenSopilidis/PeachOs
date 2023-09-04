@@ -5,8 +5,8 @@
 #include "memory/paging/paging.h"
 
 struct interrupt_frame;
-
-struct registers { 
+struct registers
+{
     uint32_t edi;
     uint32_t esi;
     uint32_t ebp;
@@ -22,21 +22,25 @@ struct registers {
     uint32_t ss;
 };
 
+
 struct process;
-
-struct task {
-    // each task has its own page directory
-    // so it can have its own 4gb address space
+struct task
+{
+    /**
+     * The page directory of the task
+     */
     struct paging_4gb_chunk* page_directory;
-    // registers of the task when the task is not running
-    struct registers registers;
-    // next task in linked list
-    struct task* next;
 
-    // the process of the task
+    // The registers of the task when the task is not running
+    struct registers registers;
+
+    // The process of the task
     struct process* process;
 
-    // previous task in linked list
+    // The next task in the linked list
+    struct task* next;
+
+    // Previous task in the linked list
     struct task* prev;
 };
 
@@ -44,19 +48,19 @@ struct task* task_new(struct process* process);
 struct task* task_current();
 struct task* task_get_next();
 int task_free(struct task* task);
+
 int task_switch(struct task* task);
 int task_page();
 int task_page_task(struct task* task);
 
 void task_run_first_ever_task();
-void restore_general_purpose_registers(struct registers* regs);
+
 void task_return(struct registers* regs);
+void restore_general_purpose_registers(struct registers* regs);
 void user_registers();
 
-void task_current_save_state(struct interrupt_frame* frame);
-
+void task_current_save_state(struct interrupt_frame *frame);
 int copy_string_from_task(struct task* task, void* virtual, void* phys, int max);
-
 void* task_get_stack_item(struct task* task, int index);
 
 #endif

@@ -18,6 +18,8 @@
         "io.h": "c",
         "print.h": "c",
         "keyboard.h": "c",
-        "idt.h": "c"
+        "idt.h": "c",
+        "stdbool.h": "c",
+        "elfloader.h": "c"
     }
 }

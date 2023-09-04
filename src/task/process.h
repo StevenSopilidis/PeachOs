@@ -1,33 +1,44 @@
-#ifndef _PROCESS_H_
-#define _PROCESS_H_
-
-#include "stdint.h"
-#include "config.h"
+#ifndef _PROCESS_H
+#define _PROCESS_H
+#include <stdint.h>
 #include "task.h"
+#include "config.h"
 
-struct process {
-    // process id
+#define PROCESS_FILETYPE_ELF 0
+#define PROCESS_FILETYPE_BINARY 1
+
+typedef unsigned char PROCESS_FILETYPE;
+struct process
+{
+    // The process id
     uint16_t id;
 
     char filename[PEACHOS_MAX_PATH];
 
-    // the main process task
+    // The main process task
     struct task* task;
-    // allocations of a process
-    // when process fails or stops executing
-    // we can free all the memory to avoid memory leaks
-    void* allocations[PEACHOS_MAX_PROGRAM_ALLOCATIONS];
-    
-    // physical pointer to process memory
-    void* ptr;
 
-    // physical pointer to stack memory
+    // The memory (malloc) allocations of the process
+    void* allocations[PEACHOS_MAX_PROGRAM_ALLOCATIONS];
+
+    PROCESS_FILETYPE filetype;
+
+    union
+    {
+        // The physical pointer to the process memory.
+        void* ptr;
+        struct elf_file* elf_file;
+    };
+    
+
+    // The physical pointer to the stack memory
     void* stack;
 
-    // the size of the data pointed to by "ptr"
+    // The size of the data pointed to by "ptr"
     uint32_t size;
 
-    struct keyboard_buffer {
+    struct keyboard_buffer
+    {
         char buffer[PEACHOS_KEYBOARD_BUFFER_SIZE];
         int tail;
         int head;
@@ -35,10 +46,9 @@ struct process {
 };
 
 int process_switch(struct process* process);
-int process_load_for_slot(const char* filename, struct process** process, int process_slot);
 int process_load_switch(const char* filename, struct process** process);
 int process_load(const char* filename, struct process** process);
-
+int process_load_for_slot(const char* filename, struct process** process, int process_slot);
 struct process* process_current();
 struct process* process_get(int process_id);
 
