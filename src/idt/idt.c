@@ -93,6 +93,7 @@ void isr80h_register_command(int command_id, ISR80H_COMMAND command)
 
     if (isr80h_commands[command_id])
     {
+        printf("Command: %d\n", command_id);
         panic("Your attempting to overwrite an existing command\n");
     }
 

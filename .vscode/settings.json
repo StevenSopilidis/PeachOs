@@ -20,6 +20,7 @@
         "keyboard.h": "c",
         "idt.h": "c",
         "stdbool.h": "c",
-        "elfloader.h": "c"
+        "elfloader.h": "c",
+        "stdlib.h": "c"
     }
 }
