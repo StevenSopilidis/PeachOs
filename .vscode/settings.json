@@ -22,6 +22,7 @@
         "stdbool.h": "c",
         "elfloader.h": "c",
         "stdlib.h": "c",
-        "peachos.h": "c"
+        "peachos.h": "c",
+        "shell.h": "c"
     }
 }
