@@ -21,6 +21,7 @@
         "idt.h": "c",
         "stdbool.h": "c",
         "elfloader.h": "c",
-        "stdlib.h": "c"
+        "stdlib.h": "c",
+        "peachos.h": "c"
     }
 }

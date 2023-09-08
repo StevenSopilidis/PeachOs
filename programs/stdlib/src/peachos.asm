@@ -3,9 +3,10 @@
 section .asm
 
 global print:function
-global getKey:function
-global peachosMalloc:function
-global peachosFree:function
+global peachos_getKey:function
+global peachos_free:function
+global peachos_malloc:function
+global peachosPutChar:function
 
 ; void print(const char* filename)
 print:
@@ -19,7 +20,7 @@ print:
     ret
 
 ; int getkey()
-getKey:
+peachos_getKey:
     push ebp
     mov ebp, esp
     mov eax, 2 ; Command getKey
@@ -27,23 +28,35 @@ getKey:
     pop ebp
     ret
 
-; void* peachos_malloc(size_t size)
-peachosMalloc:
+
+; void peachosPutChar(char c)
+peachosPutChar:
     push ebp
     mov ebp, esp
-    mov eax, 4 ; command malloc
-    push dword[ebp+8] ; argument for size of memory
+    mov eax, 3 
+    push dword [ebp+8]
+    int 0x80
+    add esp, 4
+    pop ebp
+    ret
+
+; void* peachos_malloc(size_t size)
+peachos_malloc:
+    push ebp
+    mov ebp, esp
+    mov eax, 4 ; Command malloc (Allocates memory for the process)
+    push dword[ebp+8] ; Variable "size"
     int 0x80
     add esp, 4
     pop ebp
     ret
 
 ; void peachos_free(void* ptr)
-peachosFree:
+peachos_free:
     push ebp
     mov ebp, esp
-    mov eax, 5 ; command free
-    push dword[ebp+8] ; ptr to free
+    mov eax, 5 ; Command 5 free (Frees the allocated memory for this process)
+    push dword[ebp+8] ; Variable "ptr"
     int 0x80
     add esp, 4
     pop ebp

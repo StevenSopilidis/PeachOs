@@ -2,9 +2,9 @@
 #include "peachos.h"
 
 void* malloc(size_t size) {
-    return peachosMalloc(size);
+    return peachos_malloc(size);
 }
 
 void free(void* ptr){
-    peachosFree(ptr);
+    peachos_free(ptr);
 }
