@@ -1,4 +1,4 @@
-FILES=./build/start.o ./build/peachos.asm.o ./build/stdlib.o ./build/peachos.o
+FILES=./build/start.o ./build/peachos.asm.o ./build/stdlib.o ./build/peachos.o ./build/string.o ./build/memory.o
 INCLUDES=-I./src
 FLAGS= -g
 
@@ -16,6 +16,13 @@ all: ${FILES}
 
 ./build/stdlib.o: ./src/stdlib.c
 	i686-elf-gcc ${INCLUDES} $(FLAGS) -std=gnu99 -c ./src/stdlib.c -o ./build/stdlib.o
+
+./build/string.o: ./src/string.c
+	i686-elf-gcc ${INCLUDES} $(FLAGS) -std=gnu99 -c ./src/string.c -o ./build/string.o
+
+./build/memory.o: ./src/memory.c
+	i686-elf-gcc ${INCLUDES} $(FLAGS) -std=gnu99 -c ./src/memory.c -o ./build/memory.o
+
 
 clean:
 	rm -rf ${FILES}
