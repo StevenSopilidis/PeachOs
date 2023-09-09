@@ -8,6 +8,12 @@
 #define PROCESS_FILETYPE_ELF 0
 #define PROCESS_FILETYPE_BINARY 1
 
+// represents a memory allocation made by a process;
+struct process_allocation {
+    void* ptr;
+    size_t size;
+};
+
 typedef unsigned char PROCESS_FILETYPE;
 struct process
 {
@@ -20,7 +26,7 @@ struct process
     struct task* task;
 
     // The memory (malloc) allocations of the process
-    void* allocations[PEACHOS_MAX_PROGRAM_ALLOCATIONS];
+    struct process_allocation allocations[PEACHOS_MAX_PROGRAM_ALLOCATIONS];
 
     PROCESS_FILETYPE filetype;
 

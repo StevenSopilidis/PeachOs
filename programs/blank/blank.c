@@ -1,12 +1,17 @@
 #include "peachos.h"
 #include "stdlib.h"
 #include "stdbool.h"
+#include "string.h"
 
 int main(int argc, char** argv) {
-    print("hallo from program\n");
+    char* ptr = malloc(20);
+    strcpy(ptr, "hallo world");
 
-    while (1) {}
+    print(ptr);
+    free(ptr);
 
-
+    while (1) {
+        
+    }
     return 0;
 }

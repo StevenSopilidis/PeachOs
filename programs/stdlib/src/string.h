@@ -13,7 +13,7 @@ int strncmp(const char* str1, const char* str2, int n);
 int strnlen_terminator(const char* str, int max, char terminator);
 char tolower(char c);
 int istrncmp(const char* str1, const char* str2, int n);
-char* strtok(char* str, const char* delimiters)
+char* strtok(char* str, const char* delimiters);
 
 
 #endif
