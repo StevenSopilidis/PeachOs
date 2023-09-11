@@ -1,17 +1,16 @@
 #include "peachos.h"
 #include "stdlib.h"
-#include "stdbool.h"
+#include "stdio.h"
 #include "string.h"
+int main(int argc, char** argv)
+{
+    char str[] = "hello world";
+    struct command_argument* root_command = peachos_parse_command(str, sizeof(str));
+    printf("%s\n", root_command->argument);
+    printf("%s\n", root_command->next->argument);
 
-int main(int argc, char** argv) {
-    char* ptr = malloc(20);
-    strcpy(ptr, "hallo world");
-
-    print(ptr);
-    free(ptr);
-
-    while (1) {
-        
+    while(1) 
+    {
     }
     return 0;
 }

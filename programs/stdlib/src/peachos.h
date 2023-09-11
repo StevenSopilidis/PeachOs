@@ -1,16 +1,24 @@
-#ifndef _PEACHOS_H_
-#define _PEACHOS_H_
+#ifndef _PEACHOS_H
+#define _PEACHOS_H
+#include <stddef.h>
+#include <stdbool.h>
 
-#include "stddef.h"
-#include "stdbool.h"
 
-void print(const char* message);
-void peachosPutChar(char c);
-int peachos_getKey();
-int peachos_getKey_block();
-void peachos_terminal_readline(char* out, int max, bool display);
+struct command_argument
+{
+    char argument[512];
+    struct command_argument* next;
+};
+
+void print(const char* filename);
+int peachos_getkey();
+
 void* peachos_malloc(size_t size);
 void peachos_free(void* ptr);
+void peachos_putchar(char c);
+int peachos_getkeyblock();
+void peachos_terminal_readline(char* out, int max, bool output_while_typing);
 void peachos_process_load_start(const char* filename);
+struct command_argument* peachos_parse_command(const char* command, int max);
 
 #endif

@@ -3,10 +3,10 @@
 section .asm
 
 global print:function
-global peachos_getKey:function
+global peachos_getkey:function
 global peachos_malloc:function
 global peachos_free:function
-global peachosPutChar:function
+global peachos_putchar:function
 global peachos_process_load_start:function
 
 ; void print(const char* filename)
@@ -20,8 +20,8 @@ print:
     pop ebp
     ret
 
-; int peachos_getKey()
-peachos_getKey:
+; int peachos_getkey()
+peachos_getkey:
     push ebp
     mov ebp, esp
     mov eax, 2 ; Command getkey
@@ -29,8 +29,8 @@ peachos_getKey:
     pop ebp
     ret
 
-; void peachosPutChar(char c)
-peachosPutChar:
+; void peachos_putchar(char c)
+peachos_putchar:
     push ebp
     mov ebp, esp
     mov eax, 3 ; Command putchar
