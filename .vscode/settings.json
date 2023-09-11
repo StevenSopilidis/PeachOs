@@ -23,6 +23,7 @@
         "elfloader.h": "c",
         "stdlib.h": "c",
         "peachos.h": "c",
-        "shell.h": "c"
+        "shell.h": "c",
+        "kernel.h": "c"
     }
 }
