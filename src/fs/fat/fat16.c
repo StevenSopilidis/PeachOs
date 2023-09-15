@@ -698,6 +698,7 @@ int fat16_write(struct disk* disk, void* descriptor, void* data, uint32_t size, 
         goto out;
     }
 
+    
 
 out:
     return res;
